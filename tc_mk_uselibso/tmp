@@ -1,0 +1,1 @@
+ gcc -fPIC -ggdb -Wall -o0 test.o -o test -L /home/ashen/tc/tc_mk_liba/lib -lprt -I /home/ashen/tc/tc_mk_libso/inc/

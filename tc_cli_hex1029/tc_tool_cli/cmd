@@ -1,0 +1,1 @@
+tcpdump  -i eth1 src host 10.0.85.2 -w /home/esb/ECIF/tc_tool_cli/send.pca
