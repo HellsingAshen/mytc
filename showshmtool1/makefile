@@ -1,4 +1,4 @@
-TAR=showshm
+TAR=test
 SRCEXT = *.c
 GCCFG = gcc -fPIC
 LINKFG = -g -Wall -o

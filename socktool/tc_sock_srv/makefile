@@ -1,9 +1,10 @@
-TAR=showshm
+TAR=hex_srv
 SRCEXT = *.c
 GCCFG = gcc -fPIC
-LINKFG = -g -Wall -o
+LINKFG = -ggdb -Wall -O0 -o 
 #SRCFD = . ../tc_test
 SRCFD = . 
+LIB = 
 SRC_FILE1 := $(foreach n, $(SRCFD), $(wildcard $(n)/$(SRCEXT))) 
 #SRC_FILE := $(foreach n, $(SRCFD)/$(wildcard $(SRCEXT)), $(wildcard $(SRCFD)/$(SRCEXT))) 
 #SRC_FILE := $(foreach n, $(SRCFD)/$(wildcard $(SRCEXT)), $(wildcard $(SRCEXT))) 

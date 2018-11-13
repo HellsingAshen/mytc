@@ -1,0 +1,4 @@
+api test:
+    semget
+    semctl
+    semop

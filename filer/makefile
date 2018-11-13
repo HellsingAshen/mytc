@@ -1,4 +1,4 @@
-TAR=showshm
+TAR=tr
 SRCEXT = *.c
 GCCFG = gcc -fPIC
 LINKFG = -g -Wall -o

@@ -1,4 +1,4 @@
-TAR=showshm
+TAR=notify_stub
 SRCEXT = *.c
 GCCFG = gcc -fPIC
 LINKFG = -g -Wall -o
@@ -15,9 +15,9 @@ ALLFILE = $(wildcard *.c)
 AFFILE =  $(wildcard $(SRCFD)/$(SRCEXT))
 
 $(TAR):$(OBJS)
-	$(GCCFG) $(LINKFG)  $(TAR) $(OBJS)
+	$(GCCFG) $(LINKFG)  $(TAR) $(OBJS) -lpthread
 $(OBJS):%.o:%.c
-	$(GCCFG) $(LINKFG) $@ -c $<
+	$(GCCFG) $(LINKFG) $@ -c $< -lpthread
 
 #obj:
 	#@echo $(SRC_FILE);
