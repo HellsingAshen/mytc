@@ -1,0 +1,45 @@
+[DEBUG][014274][thread_stub.c:00109][20181113 23:37:52 135]->in main .
+[DEBUG][014274][thread_pro.c:00008][20181113 23:37:52 136]->pth_crt .
+
+[DEBUG][014274][thread_pro.c:00008][20181113 23:37:52 136]->pth_crt .
+
+[DEBUG][014907][thread_stub.c:00150][20181113 23:47:24 106]->in main .
+[DEBUG][014907][thread_pro.c:00008][20181113 23:47:24 106]->pth_crt .
+
+[DEBUG][014907][thread_pro.c:00008][20181113 23:47:24 107]->pth_crt .
+
+[DEBUG][014977][thread_stub.c:00151][20181113 23:48:15 635]->in main .
+[DEBUG][014977][thread_pro.c:00008][20181113 23:48:15 635]->pth_crt .
+
+[DEBUG][014977][thread_pro.c:00008][20181113 23:48:15 635]->pth_crt .
+
+[DEBUG][015149][thread_stub.c:00151][20181113 23:50:32 001]->in main .
+[DEBUG][015149][thread_pro.c:00008][20181113 23:50:32 001]->pth_crt .
+
+[DEBUG][015149][thread_pro.c:00008][20181113 23:50:32 001]->pth_crt .
+
+[DEBUG][015212][thread_stub.c:00151][20181113 23:51:21 222]->in main .
+[DEBUG][015212][thread_pro.c:00008][20181113 23:51:21 222]->pth_crt .
+
+[DEBUG][015212][thread_pro.c:00008][20181113 23:51:21 222]->pth_crt .
+
+[DEBUG][015244][thread_stub.c:00151][20181113 23:51:44 334]->in main .
+[DEBUG][015244][thread_pro.c:00008][20181113 23:51:44 334]->pth_crt .
+
+[DEBUG][015244][thread_pro.c:00008][20181113 23:51:44 334]->pth_crt .
+
+[DEBUG][015608][thread_stub.c:00154][20181113 23:56:49 041]->in main .
+[DEBUG][015608][thread_pro.c:00008][20181113 23:56:49 041]->pth_crt .
+
+[DEBUG][015608][thread_pro.c:00008][20181113 23:56:49 041]->pth_crt .
+
+[DEBUG][015706][thread_stub.c:00155][20181113 23:57:53 768]->in main .
+[DEBUG][015706][thread_pro.c:00008][20181113 23:57:53 769]->pth_crt .
+
+[DEBUG][015706][thread_pro.c:00008][20181113 23:57:53 769]->pth_crt .
+
+[DEBUG][015811][thread_stub.c:00155][20181113 23:59:23 227]->in main .
+[DEBUG][015811][thread_pro.c:00008][20181113 23:59:23 227]->pth_crt .
+
+[DEBUG][015811][thread_pro.c:00008][20181113 23:59:23 227]->pth_crt .
+

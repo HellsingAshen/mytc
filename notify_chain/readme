@@ -1,0 +1,6 @@
+notify chain:
+1. def notify chain
+2. [pub] def register func
+3. [sub] call register
+4. event 
+5. notify

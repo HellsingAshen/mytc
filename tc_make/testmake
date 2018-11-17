@@ -1,0 +1,33 @@
+target=tc_test
+target_o=tc_test.o
+target_c=tc_test.c
+FLAGS=-wall  -lpthread
+
+make_path = . : ../tc_test
+#names:=a b c d 
+tg := $(foreach(n, $(names), $(n).o))
+file :=a.c b.c
+ofile := $(file:%.c=%.o)
+patfile = $(patsubst %.c, %.o, $(file))
+forfile = $(foreach var, $(file), $(var).o)
+
+obj : 
+	#@echo  "hello";pwd;cd /home && pwd; echo $(file); 
+	#echo $(patfile)
+	echo $(forfile)
+
+
+
+
+
+
+
+$(target):$(target_o)
+	cc  -o $(target) $(target_o) $(FLAGS)
+$(target_o):$(target_c)
+	cc -c $(target) $(target_c)
+clean:
+	rm -f $(target)
+	rm -f *.o
+
+
