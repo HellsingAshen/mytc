@@ -1,6 +1,0 @@
-1. 当前日志支持屏蔽，设置环境变量 LOG_MODE,不设置，默认值为LOG_MODE_DEBUG, 打印所有
-
-2. 当前日志支持设置保存路径, 设置环境变量LOG_FILE_PATH, 不设置，默认为"."
-
-3. 当前LOG_SWITCH_MODE 不支持, LOG_SIZE 不支持
-
