@@ -1,3 +1,0 @@
-name    sex     born    from    age     
-shen    man     1989    jiangsu 28
-liu     woman   1987    jiangsu 30
