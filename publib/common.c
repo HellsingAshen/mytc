@@ -61,7 +61,23 @@ int Long2Str(
 
 }
     
-
+/*
+ * @desc : unsigned int to hex string 
+ * @input: 
+ *          n   
+ * @output: 
+ *          str 
+ * @cautious:
+ */          
+static void
+Uint2HexStr(char * str, uint32_t n) {
+    int i;
+    static char hex[16] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+    for (i=0;i<8;i++) {
+        str[i] = hex[(n >> ((7-i) * 4))&0xf];
+    }
+    str[8] = '\0';
+}
 
 void Test()
 {
