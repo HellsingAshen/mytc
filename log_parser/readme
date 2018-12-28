@@ -1,0 +1,14 @@
+--  分析日志流水
+    流水有关键字，关键字用固定的符号包裹
+    流水是多进程交叉打印
+
+TODO:
+    1. 合并关联流水
+    2. bugfix 1
+
+-- set log
+set env [LOG_FILE_PATH] 
+
+
+-- bug fix
+1. key is unavailable when handing transactions with the same time and the same file
