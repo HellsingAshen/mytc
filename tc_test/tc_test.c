@@ -2,9 +2,53 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <regex.h>
 #define global
 global int g_iTag = 0;
 
+int DoGetLineTc()
+{
+   FILE * fp;
+   char * line = NULL;
+   size_t len = 0;
+   ssize_t read;
+
+   fp = fopen("/home/ashen/tc/tc_test/a", "r");
+   if (fp == NULL)
+       exit(EXIT_FAILURE);
+
+   while ((read = getline(&line, &len, fp)) != -1) {
+       printf("Retrieved line of length [%zu] , line = [%s] \n", read, line);
+   }
+
+   if (line)
+       free(line);
+   exit(EXIT_SUCCESS);
+}
+int DoRegTc()
+{
+
+    int status ,i;
+    int cflags = REG_EXTENDED;
+    const size_t nmatch = 1;
+    regex_t reg;
+    const char * pattern = "\\w\\.[2-9][0-9]{7}";
+    char * buf = "chenyi.20181220";
+    regcomp(&reg,pattern,cflags);
+    status = regexec(&reg,buf,0, NULL, 0);
+    printf("status = [%d].\n", status);
+    if(status == REG_NOMATCH)
+        printf("No match\n");
+    else if (0 == status)
+    {
+        printf("match.\n");
+        printf("\n");
+    }
+    regfree(&reg);
+
+    return 0;
+
+}
 /* @ desc : SwapC
  * @ in :
  * @ out :
@@ -310,11 +354,13 @@ void Tc_ReversePrint(char* sSrc, int iLen)
 
 int main(void)
 {
+    DoGetLineTc();
 #if 0
+    //DoRegTc();
     int             aiArr[4] = {1, 2, 3, 4};
     Tc_FA(aiArr, 4, 0);
 #endif
-#if 1
+#if 0
     int             aiArr1[3] = {1, 2, 3};
     Tc_FA(aiArr1, 3, 0);
 #endif

@@ -1,7 +1,7 @@
 TAR=test
 SRCEXT = *.c
 GCCFG = gcc -fPIC
-LINKFG = -g -Wall -o
+LINKFG =-gdwarf-3 -g -Wall -o
 #SRCFD = . ../tc_test
 SRCFD = . 
 SRC_FILE1 := $(foreach n, $(SRCFD), $(wildcard $(n)/$(SRCEXT))) 
