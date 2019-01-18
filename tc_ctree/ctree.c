@@ -133,14 +133,29 @@ int ct_is_sole_node(const struct ct_node* node)
     return (node == node->prev);
 }
 
+
+struct ct_node *ct_bt_get_first_node(const struct ct_node* node)
+{
+    struct ct_node*         start           = NULL;
+    
+    for (start = node; start; start = start->next)
+    {
+        if (start->child)
+        {
+            break;
+        }
+    }
+    
+/* TODO: @0118 */
+    return start->child;
+}
+
 /* for Breadth traversal */
 struct ct_node *ct_bt_next(const struct ct_node* node)
 {
-    struct ct_node*         child_node      = NULL;
-
     assert(NULL != node);
 
-    return ((node->next) ? node->next : (child_node = ct_first_node(node), child_node->child));
+    return ((node->next) ? node->next : ct_bt_get_first_node(node));
 }
 
 struct ct_node *ct_bt_prev(const struct ct_node* node)
@@ -352,7 +367,7 @@ struct ct_node* ct_br_sub_get_last(const struct ct_node* root)
 
     if (!root->child)
     {
-        return NULL;
+        return root;
     }
 
     for (child = root->child; child; child = child->next)
@@ -368,7 +383,7 @@ struct ct_node* ct_br_sub_get_last(const struct ct_node* root)
 
     node = ct_br_sub_get_last(target_node);
 
-    return target_node;
+    return node;
 }
 
 
@@ -409,10 +424,24 @@ struct ct_node* ct_depth_traveral(const struct ct_root* root)
     /* TODO: fix  depth traveral */
     return NULL;
 }
+
+/* here need add your code here. */
 struct ct_node* ct_breadth_traveral(const struct ct_root* root)
 {
-
     /* TODO: fix breadth traveral */
+    
+    struct ct_node*         last            = NULL;
+    struct ct_node*         next            = NULL;
+    struct ct_node*         node            = NULL;
+
+    assert(NULL != root);
+    last = ct_br_get_last(root->node);
+    
+    for (node = root->node; node != last; node = ct_bt_next(node))
+    {
+
+    }
+    
     return NULL;
 }
 

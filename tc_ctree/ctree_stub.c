@@ -125,12 +125,23 @@ int tc_ct_insert()
 
     /* 1 | 2 3 | 4 5 6 | 7 8 9 10 || 11 12 13 14 15 16 */
     /* construct a tree like this :
+     *
+     * case 1:
+     *          1
+     *      2       3
+     *    4 5 6   7 8 9
+     *      11->15  
+     *
+     * case 2:
      *          1
      *      2       3
      *    4 5 6   7 8 9
      *      11->15  16
      */
+#define CASE_2 1
     int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+ #define CASE_1 0
+    //int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     //int             aiValue[]       = {1, 2, 3};
 
     for (; i < sizeof(aiValue)/sizeof(int); i++){
