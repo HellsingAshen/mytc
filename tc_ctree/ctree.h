@@ -82,4 +82,16 @@ int ct_is_br_last(
     const struct ct_root* root,
     const struct ct_node* node
     );
+
+struct ct_node* ct_br_get_last(const struct ct_root* root);
+
+struct ct_node *ct_bt_next(struct ct_node* node);
+
+int ct_get_node_deepth(const struct ct_node* root);
+
+struct ct_node *ct_first_level_node_re(struct ct_node* root, int level);
+
+int ct_node_get_deepth(const struct ct_node* ct_node);
+
+struct ct_node *ct_first_level_node(const struct ct_root* root, int level);
 #endif
