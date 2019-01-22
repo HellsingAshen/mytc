@@ -96,6 +96,56 @@ struct ct_node* tc_assign_parent(struct list_head* pstLink, struct list_head* ps
             break;
         }
     
+        case 17:
+        {
+            pstListNode= tc_get_list_node(9, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 18:
+        {
+            pstListNode= tc_get_list_node(10, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 19:
+        {
+            pstListNode= tc_get_list_node(13, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+
+        case 20:
+        {
+            pstListNode= tc_get_list_node(15, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 21:
+        {
+            pstListNode= tc_get_list_node(20, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 22:
+        case 23:
+        {
+            pstListNode= tc_get_list_node(17, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 24:
+        {
+            pstListNode= tc_get_list_node(18, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
+        case 25:
+        {
+            pstListNode= tc_get_list_node(24, pstListHead);
+            pstParent = (pstListHead ? container_of(pstListNode, Group_S, stLink) : NULL);
+            break;
+        }
         default:
         {
             break;
@@ -137,38 +187,30 @@ struct ct_node* tc_ct_dfs(const struct ct_root* root)
     return NULL;
 }
 
-struct ct_node* tc_ct_breadth_traveral(const struct ct_root* root)
+
+void tc_bfs_travel_level(int level, struct ct_root* root)
 {
-    /* TODO: fix breadth traveral */
-
-    struct ct_node*         last            = NULL;
-    struct ct_node*         node            = NULL;
-    Group_S*                pstGrp          = NULL;
-    int                     is_last         = 1;
-
-    assert(NULL != root);
-    last = ct_br_get_last(root);
-
-    for (node = root->node; is_last; node = ct_bt_next(node))
+    struct ct_node* first           = NULL;
+    for (first = ct_get_level_first_node(root, level); first; first = ct_get_level_next(first))
     {
-        pstGrp = NULL;
-        pstGrp = (Group_S*)container_of(node, Group_S, stNode); 
-        printf("test case *** breadth traver  -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, (&pstGrp->stNode));
-        if (ct_is_last_node(node))
-        {
-            printf("\n"); 
-        }
-        if (node == last)
-        {
-            is_last = 0;
-        }
-        
+        travel_node(first);
+    }
+    return;
+}
+void tc_bfs(struct ct_root* root)
+{
+    int             height          = 0;
+    int             i               = 0;
+    height = ct_get_deepth(root);
+    for (; i < height; i++)
+    {
+        tc_bfs_travel_level(i, root);
     }
 
-    return NULL;
+    return;
 }
 
-int tc_ct_insert()
+int tc_ct()
 {
     int             iRet            = 0;
     struct ct_node* pstParent       = NULL;
@@ -201,9 +243,8 @@ int tc_ct_insert()
      *    4 5 6   7 8 9
      *      11->15  16
      */
-#define CASE_2 1
-    int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
- #define CASE_1 0
+    int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
+    //int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
     //int             aiValue[]       = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     //int             aiValue[]       = {1, 2, 3};
 
@@ -233,45 +274,37 @@ int tc_ct_insert()
         }
         pstGrp = container_of(pstListPos, Group_S, stLink);
         pstParent = tc_assign_parent(pstListPos, pstListHead);
-printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
-        ct_parent_insert_node(pstParent, &pstGrp->stNode);
+        printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
+        ct_parent_insert(pstParent, &pstGrp->stNode);
     }
 
-#if 0
-    pstFirstChild = ct_first(&stRoot);
-    printf("test case -- ct_first -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
-
-    pstFirstChild = ct_last(&stRoot);
-    printf("test case -- ct_last -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
-#endif
-
     pstTmpLink= tc_get_list_node(7, pstListHead);
-    pstFirstChild = ct_first_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_first_node -- value 7 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_first_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_first_sibling -- value 7 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
     assert(7 == ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
     pstTmpLink= tc_get_list_node(8, pstListHead);
-    pstFirstChild = ct_first_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_first_node -- value 8 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_first_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_first_sibling -- value 8 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
     assert(7 == ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
     pstTmpLink= tc_get_list_node(10, pstListHead);
-    pstFirstChild = ct_first_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_first_node -- value 10 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_first_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_first_sibling -- value 10 = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
     assert(7 == ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
 
     pstTmpLink= tc_get_list_node(10, pstListHead);
-    pstFirstChild = ct_last_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_last_node -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_last_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_last_sibling 10 -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
     pstTmpLink= tc_get_list_node(8, pstListHead);
-    pstFirstChild = ct_last_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_last_node -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_last_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_last_sibling 8 -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
     pstTmpLink= tc_get_list_node(7, pstListHead);
-    pstFirstChild = ct_last_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
-    printf("test case -- ct_last_node -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
+    pstFirstChild = ct_last_sibling(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
+    printf("test case -- ct_last_sibling 7 -- value = [%d].\n", ((Group_S*)container_of(pstFirstChild, Group_S, stNode))->iMemberNum);
 
 
     pstTmpLink= tc_get_list_node(7, pstListHead);
@@ -307,9 +340,13 @@ printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNo
     iRet = ct_is_last_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
     printf("test case ** ct_is_last_node -- value 3 = [%s].\n", (iRet != 0) ? "is" : "not");
 
+    void* pTmp = NULL;
+    pstTmpLink= tc_get_list_node(6, pstListHead);
+    pTmp = (void*)ct_get_root(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case -- ct_get_root -- value 6 = [%d].\n", ((Group_S*)container_of(pTmp, Group_S, stNode))->iMemberNum);
+
     pstTmpLink= tc_get_list_node(7, pstListHead);
     //printf("val = [%d]\n", ((Group_S*)container_of(pstTmpLink, Group_S, stLink))->iMemberNum);
-
     iRet = ct_is_sole_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
     printf("test case -- ct_is_sole_node -- value = [%s].\n", (iRet != 0) ? "is" : "not");
 
@@ -327,12 +364,20 @@ printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNo
     printf("test case -- ct_get_node_level 7-- value = [%d].\n", iRet);
 
     pstTmpLink= tc_get_list_node(7, pstListHead);
-    iRet = ct_is_br_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
-    printf("test case -- ct_is_br_last -- value = [%d].\n", iRet);
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case -- ct_is_bfs_last -- value = [%d].\n", iRet);
+
+    pstTmpLink= tc_get_list_node(21, pstListHead);
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case -- ct_is_bfs_last 21 -- value = [%d].\n", iRet);
     
-    pstTmpLink= tc_get_list_node(10, pstListHead);
-    iRet = ct_is_br_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
-    printf("test case -- ct_is_br_last -- value = [%d].\n", iRet);
+    pstTmpLink= tc_get_list_node(25, pstListHead);
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case -- ct_is_bfs_last 25 -- value = [%d].\n", iRet);
+
+    pstTmpLink= tc_get_list_node(24, pstListHead);
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case -- ct_is_bfs_last 24 -- value = [%d].\n", iRet);
 
     pstTmpLink= tc_get_list_node(6, pstListHead);
     iRet = ct_is_last_node(&((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);    
@@ -345,13 +390,13 @@ printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNo
 
     pstTmpLink= tc_get_list_node(15, pstListHead);
     pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
-    iRet = ct_is_br_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
-    printf("test case *** ct_is_br_last_node -- value 15 = [%s].\n", (iRet != 0) ? "is" : "not");
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case *** ct_is_bfs_last_node -- value 15 = [%s].\n", (iRet != 0) ? "is" : "not");
 
     pstTmpLink= tc_get_list_node(16, pstListHead);
     pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
-    iRet = ct_is_br_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
-    printf("test case *** ct_is_br_last_node -- value 16 = [%s].\n", (iRet != 0) ? "is" : "not");
+    iRet = ct_is_bfs_last(&stRoot, &((Group_S*)container_of(pstTmpLink, Group_S, stLink))->stNode);
+    printf("test case *** ct_is_bfs_last_node -- value 16 = [%s].\n", (iRet != 0) ? "is" : "not");
 
     pstTmpLink= tc_get_list_node(16, pstListHead);
     pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
@@ -379,68 +424,71 @@ printf("==== insert value[%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNo
     //assert(2 == iRet);
 
     pstGrp = NULL;
-    pstTmpNode = ct_br_get_last(&stRoot);
+    pstTmpNode = ct_get_level_first_node(&stRoot, 0);
     pstGrp = (Group_S*)container_of(pstTmpNode, Group_S, stNode); 
-    printf("test case *** ct_br_get_last -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
+    printf("test case *** ct_get_level_first_node 0 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
 
     pstGrp = NULL;
-    pstTmpNode = ct_first_level_node(&stRoot, 0);
+    pstTmpNode = ct_get_level_first_node(&stRoot, 1);
     pstGrp = (Group_S*)container_of(pstTmpNode, Group_S, stNode); 
-    printf("test case *** ct_first_level_node 0 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
+    printf("test case *** ct_get_level_first_node 1 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
 
     pstGrp = NULL;
-    pstTmpNode = ct_first_level_node(&stRoot, 1);
+    pstTmpNode = ct_get_level_first_node(&stRoot, 2);
     pstGrp = (Group_S*)container_of(pstTmpNode, Group_S, stNode); 
-    printf("test case *** ct_first_level_node 1 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
-
-    pstGrp = NULL;
-    pstTmpNode = ct_first_level_node(&stRoot, 2);
-    pstGrp = (Group_S*)container_of(pstTmpNode, Group_S, stNode); 
-    printf("test case *** ct_first_level_node 2 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
+    printf("test case *** ct_get_level_first_node 2 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
     
     pstGrp = NULL;
-    pstTmpNode = ct_first_level_node(&stRoot, 3);
+    pstTmpNode = ct_get_level_first_node(&stRoot, 3);
     pstGrp = (Group_S*)container_of(pstTmpNode, Group_S, stNode); 
-    printf("test case *** ct_first_level_node 3 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
+    printf("test case *** ct_get_level_first_node 3 -- value = [%d] addr = [%p].\n", pstGrp->iMemberNum, &pstGrp->stNode);
 
-    printf("test case *** tc_ct_breadth_traveral start.\n");
-    tc_ct_breadth_traveral(&stRoot);
-    printf("test case *** tc_ct_breadth_traveral end.\n");
-
-    printf("test case *** tc_ct_dfs start.\n");
-    tc_ct_dfs(&stRoot);
-    printf("test case *** tc_ct_ffs end.\n");
-
-
-    struct ct_root stSubRoot;
-
-    printf("test case ### tc_ct_breadth_traveral start.\n");
-    pstTmpLink= tc_get_list_node(4, pstListHead);
-    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
-    stSubRoot.node = &pstGrp->stNode;
-    (void)ct_erase_subtree(&stSubRoot);
-    tc_ct_breadth_traveral(&stRoot);
-    printf("test case ### ct_earse_subtree value = 4\n");
-    printf("test case ### tc_ct_breadth_traveral end.\n");
-
-
-    printf("test case ### tc_ct_breadth_traveral start.\n");
-    pstTmpLink= tc_get_list_node(5, pstListHead);
-    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
-    stSubRoot.node = &pstGrp->stNode;
-    (void)ct_erase_subtree(&stSubRoot);
-    tc_ct_breadth_traveral(&stRoot);
-    printf("test case ### ct_earse_subtree value = 5\n");
-    printf("test case ### tc_ct_breadth_traveral end.\n");
-    
-    printf("test case ### tc_ct_breadth_traveral start.\n");
+    struct ct_node* pstCousionNode  = NULL;
     pstTmpLink= tc_get_list_node(6, pstListHead);
     pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
-    stSubRoot.node = &pstGrp->stNode;
-    (void)ct_erase_subtree(&stSubRoot);
-    tc_ct_breadth_traveral(&stRoot);
-    printf("test case ### ct_earse_subtree value = 6\n");
-    printf("test case ### tc_ct_breadth_traveral end.\n");
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf("test case *** ct_get_level_next 6 -- value = [%d] addr = [%p].\n",  ((Group_S*)container_of(pstCousionNode, Group_S, stNode))->iMemberNum, pstCousionNode);
+    
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(15, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf("test case *** ct_get_level_next 15 -- value = [%d] addr = [%p].\n",  ((Group_S*)container_of(pstCousionNode, Group_S, stNode))->iMemberNum, pstCousionNode);
+
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(20, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf("test case *** ct_get_level_next 20 -- value = [%d] addr = [%p].\n",  ((Group_S*)container_of(pstCousionNode, Group_S, stNode))->iMemberNum, pstCousionNode);
+
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(21, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf("test case *** ct_get_level_next 21 -- value = [%d] addr = [%p].\n",  ((Group_S*)container_of(pstCousionNode, Group_S, stNode))->iMemberNum, pstCousionNode);
+
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(7, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf("test case *** ct_get_level_next 7 -- value = [%d] addr = [%p].\n",  ((Group_S*)container_of(pstCousionNode, Group_S, stNode))->iMemberNum, pstCousionNode);
+
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(25, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf(" value = [25] pstCousionNode = [%p]\n", pstCousionNode);
+
+    pstCousionNode  = NULL;
+    pstTmpLink= tc_get_list_node(24, pstListHead);
+    pstGrp = (Group_S*)container_of(pstTmpLink, Group_S, stLink); 
+    pstCousionNode = ct_get_level_next(&pstGrp->stNode);
+    printf(" value = [24] pstCousionNode = [%p]\n", pstCousionNode);
+
+
+    printf("test case *** bfs start.\n");
+    tc_bfs(&stRoot);
+    printf("test case *** bfs end .\n");
 
     return iRet;
 }
@@ -449,7 +497,7 @@ int main ()
 {
     int             iRet            = 0;
     printf("hello c.\n");
-    iRet = tc_ct_insert();
+    iRet = tc_ct();
     
     return iRet;
 }

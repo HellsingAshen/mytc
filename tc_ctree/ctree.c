@@ -56,7 +56,7 @@ int ct_insert_node(
     return ret;
 }
 
-int ct_parent_insert_node(
+int ct_parent_insert(
     struct ct_node* parent,
     struct ct_node* node
     )
@@ -71,7 +71,7 @@ int ct_parent_insert_node(
     return  (ct_insert_node(parent, parent->child, node));
 }
 
-int ct_sibing_insert_node(
+int ct_sibing_insert(
     struct ct_node* sbiling,
     struct ct_node* node
     )
@@ -81,14 +81,10 @@ int ct_sibing_insert_node(
     return ct_insert_node((sbiling->parent) ? (sbiling->parent) : NULL, sbiling, node);
 }
 
-struct ct_node *ct_first_node(const struct ct_node *node)
+struct ct_node *ct_first_sibling(const struct ct_node *node)
 {
-    struct ct_node*         first_node         = NULL;
-
-    if (!node)
-    {
-        return NULL;
-    }
+    struct ct_node*   first_node         = NULL;
+    assert(node);
 
     if (node->parent)
     {
@@ -96,34 +92,26 @@ struct ct_node *ct_first_node(const struct ct_node *node)
     }
     else
     {
-        for (first_node = node; first_node->prev->next; first_node = first_node->prev);
+        for (first_node = (struct ct_node*)node; first_node->prev->next; first_node = first_node->prev);
     } 
     
     return first_node;
-    
 }
 
-struct ct_node *ct_last_node(const struct ct_node *node)
+struct ct_node *ct_last_sibling(const struct ct_node *node)
 {
-    struct ct_node*         first_node         = NULL;
-
-    if (!node)
-    {
-        return NULL;
-    }
-
-    first_node = ct_first_node(node);
-
-    return first_node->prev;
+    return (ct_first_sibling(node))->prev;
 }
 
 int ct_is_first_node(const struct ct_node* node)
 {
+    assert(node);
     return (NULL == node->prev->next);
 }
 
 int ct_is_last_node(const struct ct_node* node)
 {
+    assert(node);
     return (NULL == node->next);
 }
 
@@ -132,20 +120,29 @@ int ct_is_sole_node(const struct ct_node* node)
     return (node == node->prev);
 }
 
-struct ct_node *ct_first_level_node_re(struct ct_node* root, int level)
+/*
+ * @ desc : Recursive implementation of getting first node whose level is equal to level under node parent .
+ * @ in   :  
+ *          parent  -- parent node
+ *          level   -- specifed level
+ * @ out  : 
+ *          return value :target node 
+ * @ cautious:  first means the 1th at all node whose level is equal level;
+ */
+struct ct_node *ct_get_level_first_node_re(struct ct_node* parent, int level)
 {
 
     struct ct_node*         child           = NULL;
     struct ct_node*         target          = NULL;
     if (level == 0)
     {
-        return root;
+        return parent;
     } 
-    for (child = root->child; child; child = child->next)
+    for (child = parent->child; child; child = child->next)
     {
-        if ((level - 1) <= (ct_get_node_deepth(child) - 1))
+        if ((level - 1) <= (ct_node_get_deepth(child) - 1))
         {
-            target = ct_first_level_node_re(child, level - 1);
+            target = ct_get_level_first_node_re(child, level - 1);
             break;
         }
     }
@@ -153,7 +150,16 @@ struct ct_node *ct_first_level_node_re(struct ct_node* root, int level)
     return target;
 }
 
-struct ct_node *ct_first_level_node(const struct ct_root* root, int level)
+/*
+ * @ desc : get first node whose level is equal to level in common tree root.
+ * @ in   :  
+ *          root  -- ct_root
+ *          level -- specifed level
+ * @ out  : 
+ *          return value :target node 
+ * @ cautious:  first means the 1th at all node whose level is equal level;
+ */
+struct ct_node *ct_get_level_first_node(const struct ct_root* root, int level)
 {
     struct ct_node*         first           = NULL;
     struct ct_node*         node            = NULL;
@@ -172,36 +178,41 @@ struct ct_node *ct_first_level_node(const struct ct_root* root, int level)
 
     first = root->node; 
 
+    /* get first sub tree whose deepth is equal to level + 1 */
     for (; first; first = first->next)
     {
-        if (level <= ct_get_node_deepth(first) - 1)
+        if (level <= ct_node_get_deepth(first) - 1)
         {
             node = first;
             break;
         }
     }
 
-    target = ct_first_level_node_re(node, level);
+    target = ct_get_level_first_node_re(node, level);
 
     return target;
 }
-
 
 struct ct_node *ct_get_root(struct ct_node* node)
 {
     struct ct_node*         parent          = NULL;
-    struct ct_node*         target          = NULL;
     
-    for (parent = node->parent, target = node; parent; target = parent, parent = parent->parent);
+    for (parent = node; parent->parent; parent = parent->parent);
     
-    return target;
+    return parent;
 }
 
-struct ct_node *ct_bt_child_next(const struct ct_node* node)
+
+/*
+ * @ desc : get next node which is under the same level of node 
+ * @ in:
+ * @ out:
+ * @ cautious:
+ */
+struct ct_node *ct_get_level_next(const struct ct_node* node)
 {
     struct ct_node*         parent          = NULL;
-
-    assert(NULL != node);
+    struct ct_node*         cousion          = NULL;
     if (node->next)
     {
         return node->next;
@@ -220,143 +231,20 @@ struct ct_node *ct_bt_child_next(const struct ct_node* node)
             return parent->child;
         }
     }
-    return NULL;
     
-}
-
-
-struct ct_node *ct_bt_get_parent_next_sibling(struct ct_node* node)
-{
-    struct ct_node*         parent          = NULL;
-    struct ct_node*         root            = NULL;
-
-    if (node->next)
+    parent = ct_last_sibling(node->parent);
+    for (cousion = ct_get_level_next(parent); cousion; cousion = ct_get_level_next(cousion))
     {
-        return node;
-    }
-    
-    root = ct_get_root(node);
-    parent = node->parent;
-
-    /* grandfather and greadddddfather ...*/
-    for (; parent != root; parent = ct_bt_get_parent_next_sibling(parent));
-
-    return (parent ? parent->child : NULL);
-
-}
-
-struct ct_node *ct_bt_get_parent_next(struct ct_node* node)
-{
-    struct ct_node*         parent          = NULL;
-    struct ct_node*         prev            = NULL;
-
-    if (node->next)
-    {
-        return node->next;
-    }
-    
-    parent = node->parent;
-
-    if (!parent)
-    {
-        return NULL;
-    }
-
-    /* grandfather and greadddddfather ...*/
-    for (prev = parent, parent = parent->next; parent; prev = parent, parent = ct_bt_get_parent_next(parent))
-    {
-        if (ct_node_get_deepth(prev) == ct_node_get_deepth(parent))
+        if (cousion->child)
         {
-            return parent->child; 
+            return cousion->child;
         }
     }
-    
     return NULL;
-}
-
-/* for Breadth traversal */
-struct ct_node *ct_bt_next(struct ct_node* node)
-{
-    struct ct_node*         parent          = NULL;
-    struct ct_node*         start           = NULL;
-    struct ct_node*         root_node       = NULL;
-    struct ct_root          root;
-    int                     level           = 0;
-
-    root_node = ct_get_root(node);
-    assert(NULL != node);
-    if (node->next)
-    {
-        return node->next;
-    }
-
-    parent = node->parent;
-    if (!parent)
-    {
-        goto next_level;
-    }
-
-    for (parent = ct_bt_get_parent_next(parent); parent; parent = ct_bt_get_parent_next(parent))
-    {
-        if (parent->child)
-        {
-            return parent->child;
-        }
-    }
-    
-next_level:
-    /* travel at end and travel next level */
-    level = ct_get_node_level(node);
-    root.node = root_node;
-
-    if (!parent)
-    {
-        for (start = ct_first_level_node(&root, level); start; start = ct_bt_child_next(start))
-        {
-            if (start->child)
-            {
-                return start->child;
-            }
-        }
-    }
-
-    return NULL;
-}
-
-struct ct_node *ct_bt_prev(const struct ct_node* node)
-{
-    struct ct_node*         pstNode         = NULL;
-
-    assert(NULL != node);
-
-    return ((node->prev && (node->prev != node)) ? node->prev : (pstNode = ct_last_node(node), pstNode->parent));
-
 }
 
 
 #define MAX_INT(a, b) ((a > b) ? a : b)
-int ct_get_node_deepth(const struct ct_node* root)
-{
-    int                     deepth          = 0;
-    int                     sub_deepth      = 0;
-    struct ct_node*         child           = NULL;
-
-    
-    
-    if (!root->child)
-    {
-        return 1;
-    }
-    
-    for (child = root->child; child; child = child->next)
-    {
-        sub_deepth = ct_get_node_deepth(child);
-        deepth = MAX_INT(sub_deepth, deepth);
-    }
-
-    return deepth + 1;
-}
-
 /*
  *  @ desc: get ctree deepth 
  *  @ causious: start from 0
@@ -377,14 +265,17 @@ int ct_get_deepth(const struct ct_root* ct_root)
 
     for (node = ct_root->node; node; node = node->next)
     {
-        sub_deepth = ct_get_node_deepth(node);
+        sub_deepth = ct_node_get_deepth(node);
         deepth = MAX_INT(sub_deepth, deepth);
     }
     
     return deepth;
 }
 
-/* start form 1 and we don't care sibling */
+/* @ cautious: start form 1 and we don't care sibling 
+ *   down ...
+ */
+
 int ct_node_get_deepth(const struct ct_node* ct_node)
 {
     int                     deepth          = 0;
@@ -404,7 +295,7 @@ int ct_node_get_deepth(const struct ct_node* ct_node)
 
     for (node = ct_node->child; node; node = node->next)
     {
-        sub_deepth = ct_get_node_deepth(node);
+        sub_deepth = ct_node_get_deepth(node);
         deepth = MAX_INT(sub_deepth, deepth);
     }
     
@@ -421,182 +312,6 @@ int ct_get_node_level(const struct ct_node* node)
     return level;
 }
 
-#if 0
-/*
- * @ desc:  get ctree first left node
- * @ cautious:  It is not necessarily the deepest node
- */
-struct ct_node *ct_first(const struct ct_root* ct_root)
-{
-    struct ct_node*         node            = NULL;
-    struct ct_node*         parent_node     = NULL;
-    
-    assert((NULL != ct_root) && (NULL != ct_root->node));
-
-    for (node = ct_root->node; node; parent_node = node, node = node->child);
-
-    return parent_node;
-}
-
-/*
- * @ desc:  get ctree last  node
- * @ cautious:  It is not necessarily the deepest node
- */
-struct ct_node *ct_last(const struct ct_root* ct_root)
-{
-    struct ct_node*         node            = NULL;
-    struct ct_node*         last_node       = NULL;
-    struct ct_node*         parent_node     = NULL;
-    
-    assert((NULL != ct_root) && (NULL != ct_root->node));
-
-    for (node = ct_root->node, last_node = ct_last_node(node); 
-        last_node; 
-        node = last_node->child, last_node = ct_last_node(node), (last_node ? (parent_node = last_node) : (parent_node = parent_node)));
-
-    return parent_node;
-}
-#endif
-
-#define TRUE    1
-#define FALSE   0
-/* recursive */
-int ct_is_br_last_re(
-    struct ct_node* node
-    )
-{
-    int                     ret             = 1;
-    struct ct_node*         next            = NULL; 
-
-    if (!node)
-    {
-        return 1;
-    }
-    
-    if (!ct_is_last_node(node))
-    {
-        for (next = node->next; next; next = next->next)
-        {
-            if (next->child)
-            {
-                /* brother has child */
-                return 0;
-            }
-        }
-    }
-
-    ret = ct_is_br_last_re(node->parent);
-    return ret;
-
-}
-
-
-int ct_is_br_last(
-    const struct ct_root* root,
-    const struct ct_node* node
-    )
-{
-    int                     ret             = 0;
-    int                     deepth          = 0;
-    int                     level           = 0;
-    
-    if (!ct_is_last_node(node))
-    {
-        return 0;
-    }
-    
-    deepth = ct_get_deepth(root);
-    level  = ct_get_node_level(node);
-
-    if (level != deepth - 1)
-    {
-        return 0;
-    }
-
-    /* recursive */
-    ret = ct_is_br_last_re(node->parent);
-    return ret;
-    
-}
-
-/* get deepth sub */
-#define MAX_INT(a, b) ((a > b) ? a : b)
-struct ct_node* ct_br_sub_get_last(const struct ct_node* root)
-{
-    struct ct_node*         child           = NULL;
-    struct ct_node*         node            = NULL;
-    struct ct_node*         target_node     = NULL;
-    int                     deepth          = 0;
-    int                     max_deepth      = 0;
-
-    assert (NULL != root);
-
-    if (!root->child)
-    {
-        return (struct ct_node*)root;
-    }
-
-    for (child = root->child; child; child = child->next)
-    {
-       
-        deepth = ct_node_get_deepth(child);
-        if (deepth >= max_deepth)
-        {
-            max_deepth = deepth;
-            target_node = child;
-        }
-    }
-
-    node = ct_br_sub_get_last(target_node);
-
-    return node;
-}
-
-
-struct ct_node* ct_br_get_last(const struct ct_root* root)
-{
-    struct ct_node*         target_node     = NULL;
-    struct ct_node*         node            = NULL;
-    int                     deepth          = 0;
-    int                     max_deepth      = 0;
-
-    node = root->node;
-    /* if root has sibling, start from first node */
-    if (!ct_is_sole_node(node))     
-    {
-        for (; node; node = node->next)
-        {
-            deepth = ct_node_get_deepth(node);
-            if (deepth >= max_deepth)
-            {
-                max_deepth = deepth;
-                target_node = node;
-            }
-        }
-    }
-
-    target_node = ct_br_sub_get_last(node);
-
-    return target_node;
-}
-#undef MAX_INT
-#undef TRUE
-#undef FALSE
-
-
-struct ct_node* ct_depth_traveral(const struct ct_root* root)
-{
-    /* TODO: fix  depth traveral */
-    return NULL;
-}
-
-/* here need add your code here. */
-struct ct_node* ct_breadth_traveral(const struct ct_root* root)
-{
-    /* TODO: fix breadth traveral */
-    
-    return NULL;
-}
 
 /*
  * @ desc: erase subtree include child does not include sibling
@@ -633,7 +348,7 @@ void _ct_erase(struct ct_node *node)
     prev->next = next;
     if (is_last)
     {
-        next = ct_first_node(node);
+        next = ct_first_sibling(node);
     }
     next->prev = prev;
 
@@ -670,12 +385,6 @@ void ct_erase_leaf(struct ct_node *node)
     return;
 }
 
-int ct_merge_tree(
-    struct ct_root* root, 
-    struct ct_root* sub)
-{
-    return 0;
-}
 
 #define travel(node) 
 
@@ -687,7 +396,7 @@ struct ct_node* ct_node_dfs(struct ct_node* root)
         return NULL;
     }
 
-    /* TODO: add your code  to process root */
+    /* TODO: add your code  to process node */
     travel(root);
     for (child = root->child; child; child = child->next)
     {
@@ -698,26 +407,178 @@ struct ct_node* ct_node_dfs(struct ct_node* root)
     
 }
 
+void _bfs_travel_level(int level, struct ct_root* root)
+{
+    struct ct_node* first           = NULL;
+    for (first = ct_get_level_first_node(root, level); first; first = ct_get_level_next(first))
+    {
+        travel(first);
+    }
+    return;
+}
+
 struct ct_node* ct_node_bfs(struct ct_root* root)
 {
-    struct ct_node*         last            = NULL;
-    struct ct_node*         node            = NULL;
-    int                     is_last         = 1;
-
-    assert(NULL != root);
-    last = ct_br_get_last(root);
-
-    for (node = root->node; is_last; node = ct_bt_next(node))
+    int             height          = 0;
+    int             i               = 0;
+    
+    height = ct_get_deepth(root);
+    
+    for (; i < height; i++)
     {
-        /* TODO: add code to process node here */
-        travel(node);
-        
-        if (node == last)
-        {
-            is_last = 0;
-        }
+        _bfs_travel_level(i, root);
     }
 
     return NULL;
 }
 #undef travel
+
+#ifndef DESC
+#define DESC(str) 0
+/* for bfs */
+struct ct_node *ct_bfs_next(struct ct_node* node)
+{
+    return NULL;
+}
+/* recursive */
+int ct_is_bfs_last_re(
+    struct ct_node* node
+    )
+{
+    int                     ret             = 1;
+    struct ct_node*         next            = NULL; 
+
+    if (!node)
+    {
+        return 1;
+    }
+    
+    if (!ct_is_last_node(node))
+    {
+        for (next = node->next; next; next = next->next)
+        {
+            if (next->child)
+            {
+                /* brother has child */
+                return 0;
+            }
+        }
+    }
+
+    ret = ct_is_bfs_last_re(node->parent);
+    return ret;
+
+}
+
+int ct_is_bfs_last(
+    const struct ct_root* root,
+    const struct ct_node* node
+    )
+{
+    int                     ret             = 0;
+    int                     deepth          = 0;
+    int                     level           = 0;
+    
+    if (!ct_is_last_node(node))
+    {
+        return 0;
+    }
+    
+    deepth = ct_get_deepth(root);
+    level  = ct_get_node_level(node);
+
+    if (level != deepth - 1)
+    {
+        return 0;
+    }
+
+    /* recursive */
+    ret = ct_is_bfs_last_re(node->parent);
+    return ret;
+    
+}
+
+/* get deepth sub */
+struct ct_node* ct_bfs_sub_get_last(const struct ct_node* root)
+{
+    struct ct_node*         child           = NULL;
+    struct ct_node*         node            = NULL;
+    struct ct_node*         target_node     = NULL;
+    int                     deepth          = 0;
+    int                     max_deepth      = 0;
+
+    assert (NULL != root);
+
+    if (!root->child)
+    {
+        return (struct ct_node*)root;
+    }
+
+    for (child = root->child; child; child = child->next)
+    {
+       
+        deepth = ct_node_get_deepth(child);
+        if (deepth >= max_deepth)
+        {
+            max_deepth = deepth;
+            target_node = child;
+        }
+    }
+
+    node = ct_bfs_sub_get_last(target_node);
+
+    return node;
+}
+
+
+struct ct_node* ct_bfs_get_last(const struct ct_root* root)
+{
+    struct ct_node*         target_node     = NULL;
+    struct ct_node*         node            = NULL;
+    int                     deepth          = 0;
+    int                     max_deepth      = 0;
+
+    node = root->node;
+    /* if root has sibling, start from first node */
+    if (!ct_is_sole_node(node))     
+    {
+        for (; node; node = node->next)
+        {
+            deepth = ct_node_get_deepth(node);
+            if (deepth >= max_deepth)
+            {
+                max_deepth = deepth;
+                target_node = node;
+            }
+        }
+    }
+
+    target_node = ct_bfs_sub_get_last(node);
+
+    return target_node;
+}
+
+
+struct ct_node* ct_depth_traveral(const struct ct_root* root)
+{
+    /* TODO: fix  depth traveral */
+    return NULL;
+}
+
+/* here need add your code here. */
+struct ct_node* ct_breadth_traveral(const struct ct_root* root)
+{
+    /* TODO: fix breadth traveral */
+    
+    return NULL;
+}
+
+int ct_merge_tree(
+    struct ct_root* root, 
+    struct ct_root* sub)
+{
+    /* TODO : */
+    return 0;
+}
+
+#endif

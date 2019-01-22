@@ -53,20 +53,32 @@ struct ct_root
 
 extern struct ct_node *ct_next(const struct ct_node *);
 extern struct ct_node *ct_prev(const struct ct_node *);
+#if 0
 extern struct ct_node *ct_first(const struct ct_root *);
 extern struct ct_node *ct_last(const struct ct_root *);
+#endif
 
-int ct_parent_insert_node(
+#define API(str) 1
+#if API("user use api ")
+int ct_parent_insert(
     struct ct_node* parent,
+    struct ct_node* node
+    );
+
+int ct_sibing_insert(
+    struct ct_node* sbiling,
     struct ct_node* node
     );
 
 void ct_init_root(
     struct ct_node* node);
 
-struct ct_node *ct_first_node(const struct ct_node *node);
+struct ct_node *ct_first_sibling(const struct ct_node *node);
 
-struct ct_node *ct_last_node(const struct ct_node *node);
+struct ct_node *ct_last_sibling(const struct ct_node *node);
+
+#endif
+
 
 int ct_is_first_node(const struct ct_node* node);
 
@@ -78,20 +90,26 @@ int ct_get_deepth(const struct ct_root* ct_root);
 
 int ct_get_node_level(const struct ct_node* node);
 
-int ct_is_br_last(
+int ct_is_bfs_last(
     const struct ct_root* root,
     const struct ct_node* node
     );
 
 struct ct_node* ct_br_get_last(const struct ct_root* root);
 
-struct ct_node *ct_bt_next(struct ct_node* node);
+struct ct_node *ct_bfs_next(struct ct_node* node);
 
 int ct_get_node_deepth(const struct ct_node* root);
 
-struct ct_node *ct_first_level_node_re(struct ct_node* root, int level);
+struct ct_node *ct_get_level_first_node_re(struct ct_node* root, int level);
 
 int ct_node_get_deepth(const struct ct_node* ct_node);
 
-struct ct_node *ct_first_level_node(const struct ct_root* root, int level);
+struct ct_node *ct_get_level_first_node(const struct ct_root* root, int level);
+
+struct ct_node *ct_get_root(struct ct_node* node);
+
+void ct_erase_subtree(struct ct_root* root);
+
+struct ct_node *ct_get_level_next(const struct ct_node* node);
 #endif
