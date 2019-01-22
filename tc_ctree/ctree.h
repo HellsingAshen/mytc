@@ -5,25 +5,6 @@
 #define NULL (void*)0
 #endif
 
-#if 0
-struct ctree_node{
-    struct ctree_node* parent;
-    struct ctree_node* child;
-    struct ctree_node* prev;
-    struct ctree_node* next;
-};
-#endif
-#if 0
-struct tagCTreeNode_S{
-    struct tagCTreeNode_S* pstParent;
-    struct tagCTreeNode_S* pstChild;
-    struct tagCTreeNode_S* pstPrev;
-    struct tagCTreeNode_S* pstNext;
-};
-
-typedef tagCTreeNode_S  CTreeNode_S;
-#endif
-
 struct ct_node
 {
     struct ct_node *parent;
@@ -53,10 +34,6 @@ struct ct_root
 
 extern struct ct_node *ct_next(const struct ct_node *);
 extern struct ct_node *ct_prev(const struct ct_node *);
-#if 0
-extern struct ct_node *ct_first(const struct ct_root *);
-extern struct ct_node *ct_last(const struct ct_root *);
-#endif
 
 #define API(str) 1
 #if API("user use api ")
