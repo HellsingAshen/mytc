@@ -6,6 +6,7 @@ void ct_init_root(
 {
     node->prev = node;
     node->next = node->child = node->parent = NULL;
+
     return;
 }
 
@@ -43,12 +44,13 @@ int ct_insert_node(
     }
     else
     {
+        /* add tail */
         first_child->prev->next = node;
         node->prev = first_child->prev;        
         first_child->prev = node;
     }
 
-    node->parent = parent;
+    node->parent = (parent ? parent : sbiling->parent);
     node->next = NULL;
     
     return ret;
@@ -69,7 +71,7 @@ int ct_parent_insert_node(
     return  (ct_insert_node(parent, parent->child, node));
 }
 
-int ct_sibing_insert_sbiling(
+int ct_sibing_insert_node(
     struct ct_node* sbiling,
     struct ct_node* node
     )
@@ -79,11 +81,8 @@ int ct_sibing_insert_sbiling(
     return ct_insert_node((sbiling->parent) ? (sbiling->parent) : NULL, sbiling, node);
 }
 
-
-
 struct ct_node *ct_first_node(const struct ct_node *node)
 {
-
     struct ct_node*         first_node         = NULL;
 
     if (!node)
@@ -97,7 +96,7 @@ struct ct_node *ct_first_node(const struct ct_node *node)
     }
     else
     {
-        for (first_node = node->prev; first_node->next; first_node = first_node->prev);
+        for (first_node = node; first_node->prev->next; first_node = first_node->prev);
     } 
     
     return first_node;
@@ -136,7 +135,6 @@ int ct_is_sole_node(const struct ct_node* node)
 struct ct_node *ct_first_level_node_re(struct ct_node* root, int level)
 {
 
-    //struct ct_node*         node            = NULL;
     struct ct_node*         child           = NULL;
     struct ct_node*         target          = NULL;
     if (level == 0)
@@ -202,7 +200,6 @@ struct ct_node *ct_get_root(struct ct_node* node)
 struct ct_node *ct_bt_child_next(const struct ct_node* node)
 {
     struct ct_node*         parent          = NULL;
-    //int                     level           = 0;
 
     assert(NULL != node);
     if (node->next)
@@ -424,7 +421,7 @@ int ct_get_node_level(const struct ct_node* node)
     return level;
 }
 
-
+#if 0
 /*
  * @ desc:  get ctree first left node
  * @ cautious:  It is not necessarily the deepest node
@@ -459,6 +456,7 @@ struct ct_node *ct_last(const struct ct_root* ct_root)
 
     return parent_node;
 }
+#endif
 
 #define TRUE    1
 #define FALSE   0
@@ -601,7 +599,7 @@ struct ct_node* ct_breadth_traveral(const struct ct_root* root)
 }
 
 /*
- * @ desc: erase parent prev next
+ * @ desc: erase subtree include child does not include sibling
  * @ in  :
  * @ out :
  * @ cautious:
@@ -610,6 +608,7 @@ void _ct_erase(struct ct_node *node)
 {
     struct ct_node*         prev            = NULL;
     struct ct_node*         next            = NULL;
+    int                     is_last,is_first      = 0;
 
     if (ct_is_sole_node(node) && node->parent)
     {
@@ -617,19 +616,31 @@ void _ct_erase(struct ct_node *node)
         node->parent = NULL;
         return;
     }
+    
+    if (ct_is_last_node(node))
+    {
+        is_last = 1;
+    }
+    if (ct_is_first_node(node))
+    {
+        is_first = 1;
+    }
 
     /* process sibling */
     prev = node->prev;
     next = node->next;
 
     prev->next = next;
-
-    if (ct_is_last_node(node))
+    if (is_last)
     {
         next = ct_first_node(node);
     }
     next->prev = prev;
 
+    if ( is_last || is_first)
+    {
+        prev->next = NULL;
+    }
 
     if (ct_is_first_node(node) && node->parent)
     {
@@ -666,6 +677,7 @@ int ct_merge_tree(
     return 0;
 }
 
+#define travel(node) 
 
 struct ct_node* ct_node_dfs(struct ct_node* root)
 {
@@ -676,6 +688,7 @@ struct ct_node* ct_node_dfs(struct ct_node* root)
     }
 
     /* TODO: add your code  to process root */
+    travel(root);
     for (child = root->child; child; child = child->next)
     {
         ct_node_dfs(child);
@@ -684,3 +697,27 @@ struct ct_node* ct_node_dfs(struct ct_node* root)
     return NULL;
     
 }
+
+struct ct_node* ct_node_bfs(struct ct_root* root)
+{
+    struct ct_node*         last            = NULL;
+    struct ct_node*         node            = NULL;
+    int                     is_last         = 1;
+
+    assert(NULL != root);
+    last = ct_br_get_last(root);
+
+    for (node = root->node; is_last; node = ct_bt_next(node))
+    {
+        /* TODO: add code to process node here */
+        travel(node);
+        
+        if (node == last)
+        {
+            is_last = 0;
+        }
+    }
+
+    return NULL;
+}
+#undef travel
