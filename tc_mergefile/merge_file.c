@@ -3,6 +3,33 @@
 #include <assert.h>
 #define        OK         (0)
 
+/* replace first num in pcStr in iVal */
+char* ReplaceValue(char* pcStr, int iVal)
+{
+    int                 i               = 0;
+    int                 j               = 0;
+    char*               pcOut           = NULL;
+
+    while (i < strlen(pcStr))
+    {
+        if ((pcStr[i] >= '0') && (pcStr[i] <= '9'))  break;
+        i++;
+    }
+
+    if (i == strlen(pcStr) - 1) return NULL;
+
+    j = i + 1;
+    while ((j < strlen(pcStr)) && (pcStr[j] >= '0') && (pcStr[j] <= '9')) j++;
+
+    /* max int len = 10 */
+    pcOut = malloc(strlen(pcStr) + 10 + 1);
+    memset(pcOut, 0, strlen(pcStr) + 10 + 1);
+    strncpy(pcOut, pcStr, i);
+    sprintf(pcOut + strlen(pcOut), "%d", iVal);
+    strncpy(pcOut + strlen(pcOut), pcStr + j, strlen(pcStr) - j + 1);
+
+    return pcOut;
+}
 int GetLineOffset(char* pcFile, int iNum)
 {
     int                 iCount          = 0;
@@ -125,10 +152,16 @@ int main ()
     char*               pcFile1         = "./abcd";
     int                 iRet1           = 0;
 
+    char*               pcSrc           = "total num : 222.";
+    char*               pcOut           = NULL;
+
     iRet = GetFileLine(pcFile);
 
     iRet1 = GetFileLine(pcFile1);
 
     MergeFile(pcFile, 0, iRet, pcFile1, 1, iRet1, "./out");
+
+    pcOut = ReplaceValue(pcSrc, 33333);
+    printf("[%s].\n", pcOut);
     return OK;
 }
