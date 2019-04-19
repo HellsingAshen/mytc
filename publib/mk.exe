@@ -1,0 +1,27 @@
+TAR=test
+SRCEXT = *.c
+GCCFG = gcc -fPIC
+LINKFG =-gdwarf-3 -g -Wall -lm -o
+
+SLIBPATH=-L /home/ashen/mytc/publib/lib/
+INC=-I /home/ashen/mytc/publib/inc
+SLIB=-lpubc
+
+SRCFD = . 
+SRC_FILE := $(foreach n, $(SRCFD), $(wildcard $(n)/$(SRCEXT))) 
+
+OBJS := $(patsubst %.c, %.o, $(SRC_FILE))
+ALLFILE = $(wildcard *.c)
+AFFILE =  $(wildcard $(SRCFD)/$(SRCEXT))
+
+$(TAR):$(OBJS)
+#	$(GCCFG) $(LINKFG)  $(TAR) $(OBJS)
+	$(GCCFG) $(INC) $(LINKFG) $(TAR) $(OBJS) $(SLIBPATH) $(SLIB)
+$(OBJS):%.o:%.c
+	$(GCCFG) $(LINKFG) $@ -c $<
+.PHONY:clean
+clean:
+	rm -f $(TAR)
+	rm -f *.o
+
+

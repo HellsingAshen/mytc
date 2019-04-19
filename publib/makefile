@@ -1,4 +1,4 @@
-TAR=publib.a
+TAR=libpubc.a
 SRCEXT = *.c
 GCCFG = gcc 
 LINKFG = 

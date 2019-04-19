@@ -6,9 +6,9 @@
  *          iInStrLen
  * @ output: 
  *          plOut
- */ 	    
+ */         
 int Str2Long(
-	char    *pcIn, 
+    char    *pcIn, 
     int     iInStrLen,
     long    *plOut)
 {
@@ -77,6 +77,22 @@ Uint2HexStr(char * str, uint32_t n) {
         str[i] = hex[(n >> ((7-i) * 4))&0xf];
     }
     str[8] = '\0';
+}
+
+/*
+ * @ desc   : judge local is big or little endian
+ * @ input  : 
+ * @ output : 
+ * @ return :         
+ *              0 --> little endian
+ *              1 --> big endian
+ * @ cautious:
+ */          
+int GetLocalByteOrder()
+{
+    uint32_t                uiInt               = 0x01;
+
+    return ((0x01 == *(unsigned char*)&uiInt) ? 0 : 1);
 }
 
 void Test()
