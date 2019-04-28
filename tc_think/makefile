@@ -1,7 +1,7 @@
-TAR=test
+TAR=thk
 SRCEXT = *.c
-GCCFG = gcc
-LINKFG = -fPIC -ggdb -Wall -O0 -o 
+GCCFG = gcc -fPIC
+LINKFG = -ggdb -Wall -O0 -o 
 #SRCFD = . ../tc_test
 SRCFD = . ./log
 LIB = 
@@ -15,17 +15,10 @@ OBJS := $(patsubst %.c, %.o, $(SRC_FILE))
 ALLFILE = $(wildcard *.c)
 AFFILE =  $(wildcard $(SRCFD)/$(SRCEXT))
 
-
-SLIBPATH=-L /home/ashen/tc/tc_mk_liba/lib
-INC=-I /home/ashen/tc/tc_mk_libso/inc
-SLIB=-lprt
-
-
 $(TAR):$(OBJS)
-#	$(GCCFG) $(INC) $(SLIBPATH) $(SLIB) $(LINKFG)  $(TAR) $(OBJS)
-	$(GCCFG) $(LINKFG)  $(TAR) $(OBJS) $(INC) $(SLIBPATH) $(SLIB)
+	$(GCCFG) $(LINKFG)  $(TAR) $(OBJS)
 $(OBJS):%.o:%.c
-	$(GCCFG) $(INC) $(LINKFG) $@  -c $<
+	$(GCCFG) $(LINKFG) $@ -c $<
 
 #obj:
 	#@echo $(SRC_FILE);
