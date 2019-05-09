@@ -1,0 +1,922 @@
+/*--------------------------------------------------------------------
+EXAMPLE of an embedded SQL C Program for DB2.
+Connect to database test for this.
+This APP takes one argument on the command line, a sailor's SID.  It
+then finds the sailor SID's age out of the table INST105.SAILOR (in
+database test) and reports it.  A dumb and not very interesting
+APP, but it shows how things are done.
+P. Godfrey NOV 2002
+--------------------------------------------------------------------*/
+ 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sqlenv.h>
+#include <sqlcodes.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <time.h>
+#include <errno.h>
+#include <assert.h>
+ 
+#define EXIT                        (0)
+#define NOEXIT                      (1)
+#define ERR                         (-1)
+#define OK                          (0)
+#define DESC(STR)                   (1)
+#define MAX_NODE_CONFIG             (500)
+#define MAX_SHMSIZE_APPCFG          (102400)
+#define APPCFGRCD_MAX_COUNT         (317)
+#define SP                          (0x20)
+#define Tab                         (0x09)
+#define NL                          (0x0a)
+#define CR                          (0x0d)
+#define MAX_NODE_CONFIG             (500)
+#define MAX_CHANEL_CTL              (500)
+#define MAX_CHCTL_SHM_SIZE          (4 + MAX_CHANEL_CTL * (31 + 15 + 2 + 2 + 2))
+#define ENABLE                      '1'
+#define DISABLE                     '0'
+
+void Dump(){return;};
+
+#define PRTD(sFmt, args...)  printf("DEBUG:    "sFmt, ##args)
+#define PRTW(sFmt, args...)  printf("WARNING:  "sFmt, ##args)
+#define PRTE(sFmt, args...)  printf("ERROR:    "sFmt, ##args)
+#define PRTI(sFmt, args...)  printf("INFO:     "sFmt, ##args)
+
+#define FREE(p) \
+    do { \
+        if (p){free(p); p = NULL;}\
+    } while (0);
+
+#define BREAK_IF_FAILED(ret) \
+    do { \
+        if (ret) { Dump();break; \
+    } while (0);
+
+#define GOTO_IF_NULL(ptr, error) \
+    do \
+    { \
+        if (!ptr) goto error; \
+    } while (0);
+
+
+struct tagTradeVolNode_S{
+    char                acSysCd[30 + 1];
+    char                acTransId[14 + 1];
+    char                acIsLmt[2];         /* 当前阀值标志 */
+    char                acIsCtl[2];         /* 启用标志     */
+    char                acIsRefresh[2];     /* 当前刷新标志 */
+    unsigned int        uiCurVal;
+    unsigned int        uiLimitVal;
+
+    struct tagTradeVolNode_S* pstNext;
+};
+typedef struct tagTradeVolNode_S TradeVolNode_S;
+
+typedef struct tagChannelCfg_S
+{
+    char    acSysCd[31];
+    char    acTransId[15];
+    char    acIsLmt[2];
+    char    acIsCtl[2];
+    char    acIsRefresh[2];     /* 是否已经刷新 */
+}ChannelCfg_S;
+
+TradeVolNode_S* g_pstTradeVolHead = NULL;
+
+#if DESC("API")
+#define true 1
+#define false 0
+#define bool int
+
+bool CheckIsLimit(char* acSysCd, char* acTransId)
+{
+    int             iRet                = false;
+    int             i                   = 0;
+    ChannelCfg_S*   pstChannelCfg       = NULL;
+    void*           pShm                = NULL;
+    int*            piCount             = NULL;
+
+    int             iShmId              = 0;
+    iShmId = GetShm(getenv("SHMFILE1"), MAX_CHCTL_SHM_SIZE, 0666, &pShm);
+    if (iShmId < 0)
+    {
+        PRTE("GetShm failed.\n");
+        return ERR;
+    }
+
+    piCount = (int*)pShm;
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+    for (; (i < *piCount) && (strcmp(acSysCd, pstChannelCfg[i].acSysCd) <= 0); i++)
+    {
+        if (!strcmp(acSysCd, pstChannelCfg[i].acSysCd)
+            && (!strcmp(acTransId, pstChannelCfg[i].acTransId))
+            && ('1' == pstChannelCfg[i].acIsCtl[0])
+            && ('1' == pstChannelCfg[i].acIsLmt[0]))
+            return true;
+    }
+	UnlinkSHM(pShm);
+    return false;
+}
+/* get current date  format is YYYY-MM-DD  2019-04-20 */
+void  GetCurrentDate(char* pcCurrentDate)
+{  
+    time_t current;
+    struct tm *tmCurrentTime;
+
+    time(&current);
+    tmCurrentTime = localtime(&current);
+    sprintf(pcCurrentDate, "%4d-%02d-%02d", tmCurrentTime->tm_year + 1900, tmCurrentTime->tm_mon + 1, tmCurrentTime->tm_mday);
+    return;
+}
+
+/* trim all space */
+int TrimAllSpace(char *s)
+{
+    int i, j;
+    char    s1[4096];
+
+    i = j = 0;
+    while (s[i]) {
+        if (s[i] != SP && s[i] != Tab && s[i] != NL && s[i] != CR)
+            s1[j++] = s[i];
+        i++; 
+    }
+    s1[j] = 0;
+    strcpy(s, s1);
+}
+#endif
+
+#if DESC("shm")
+int UnlinkSHM(void *pShmaddr)
+{
+    if( shmdt(pShmaddr) == -1)
+    {
+        /* not to do anythings */
+    }
+    return 0;
+}
+int GetShm(
+    char* pcFile,
+    int   iSize,
+    int   iShmFlg,
+    void** ppShm)
+{
+    int             iId             = 0;
+    key_t           tKey            = 0;
+
+    if (!pcFile || iSize < 0)
+    {
+        PRTE("getenv(%s) failed . please check it .\n", pcFile);
+        return ERR;
+    }
+
+    tKey= ftok(pcFile, 1);
+    if (-1 == tKey)
+    {
+        PRTE("ftok err[%d]", tKey, strerror(errno));
+        return ERR;
+    }
+
+    /* int iId = shmget(tKey, iSize, 0666);*/
+    iId = shmget(tKey, iSize, iShmFlg);
+    if (iId < 0)
+    {
+        PRTE("shmget error, iId = [%d]", iId, strerror(errno));
+        return ERR;
+    }
+
+    if ((ppShm) && ((*ppShm = (void *)shmat(iId, (const void*)0 , 0)) == (void *)-1))
+    {
+        PRTE("shmat err[%d]:%s\n", errno, strerror(errno));
+        return ERR;
+    }
+
+    return iId;
+}
+
+#endif
+
+#if DESC("DB")
+
+/*--------------------------------------------------------------------
+Include DB2's SQL error reporting facility.
+--------------------------------------------------------------------*/
+ 
+EXEC SQL INCLUDE SQLCA ;
+ 
+/*--------------------------------------------------------------------
+Declare the SQL interface variables.
+--------------------------------------------------------------------*/
+ 
+/*--------------------------------------------------------------------
+Declare variables to be used in the following C program.
+--------------------------------------------------------------------*/
+ 
+char msg[1025];
+int rc;
+int errcount;
+ 
+/*--------------------------------------------------------------------
+This macro prints the message in the SQLCA if the return code is 0
+and the SQLCODE is not 0.
+--------------------------------------------------------------------*/
+ 
+#define PRINT_MESSAGE()                                              \
+  {                                                                  \
+      if (rc == 0 && sqlca.sqlcode != 0)                             \
+      {                                                              \
+        sqlaintp(msg, 1024, 0, &sqlca);                              \
+        printf("%s\n",msg);                                          \
+      }                                                              \
+  }
+ 
+/*--------------------------------------------------------------------
+This macro prints out all feilds in the SQLCA.
+--------------------------------------------------------------------*/
+ 
+#define DUMP_SQLCA()                                                 \
+  {                                                                  \
+    printf("**********  DUMP OF SQLCA  **********************\n");   \
+    printf("SQLCAID: %s\n", sqlca.sqlcaid);                          \
+    printf("SQLCABC: %d\n", sqlca.sqlcabc);                          \
+    printf("SQLCODE: %d\n", sqlca.sqlcode);                          \
+    printf("SQLERRML: %d\n", sqlca.sqlerrml);                        \
+    printf("SQLERRD[0]: %d\n", sqlca.sqlerrd[0]);                    \
+    printf("SQLERRD[1]: %d\n", sqlca.sqlerrd[1]);                    \
+    printf("SQLERRD[2]: %d\n", sqlca.sqlerrd[2]);                    \
+    printf("SQLERRD[3]: %d\n", sqlca.sqlerrd[3]);                    \
+    printf("SQLERRD[4]: %d\n", sqlca.sqlerrd[4]);                    \
+    printf("SQLERRD[5]: %d\n", sqlca.sqlerrd[5]);                    \
+    printf("SQLWARN: %s\n", sqlca.sqlwarn);                          \
+    printf("SQLSTATE: %s\n", sqlca.sqlstate);                        \
+    printf("**********  END OF SQLCA DUMP  *******************\n");  \
+  }
+ 
+/*--------------------------------------------------------------------
+This macro prints the message in the SQLCA if one exists.  If the
+return code is not 0 or the SQLCODE is not expected, an error occurred
+and must be recorded.
+--------------------------------------------------------------------*/
+ 
+#define CHECK_SQL(code,text_string,eExit)                            \
+  {                                                                  \
+    PRINT_MESSAGE();                                                 \
+    if (rc != 0 || sqlca.sqlcode != code) {                          \
+      printf("%s\n",text_string);                                    \
+      printf("Expected code = %d\n",code);                           \
+      if (rc == 0) {                                                 \
+          DUMP_SQLCA();                                              \
+      }                                                              \
+      else printf("RC: %d\n",rc);                                    \
+      errcount += 1;                                                 \
+      if (eExit == EXIT) goto errorexit;                             \
+    }                                                                \
+  }
+ 
+/*--------------------------------------------------------------------
+The PROGRAM.
+--------------------------------------------------------------------*/
+#endif
+
+/*
+ * desc:    init trade volumn node by given cond
+ * input : 
+ * output: 
+ *        NULL or ptr
+ */
+TradeVolNode_S* InitTradeVolNode(char* pcSysCd, char* pcTransId, unsigned int uiCount)
+{
+    assert ((NULL != pcSysCd) && (NULL != pcTransId));
+    TradeVolNode_S*     pstTradeVol = malloc(sizeof(TradeVolNode_S));
+    if (!pstTradeVol) 
+    { 
+        PRTE("malloc failed .\n"); 
+        return NULL;
+    }
+    
+    memset (pstTradeVol, 0, sizeof(TradeVolNode_S));
+    strcpy (pstTradeVol->acSysCd, pcSysCd);
+    strcpy (pstTradeVol->acTransId, pcTransId);
+    pstTradeVol->uiCurVal   = uiCount;
+    pstTradeVol->acIsCtl[0] = DISABLE;
+    pstTradeVol->acIsLmt[0] = DISABLE;
+    pstTradeVol->acIsRefresh[0] = ENABLE;
+    pstTradeVol->pstNext    = NULL;
+
+    return pstTradeVol;
+}
+
+/*
+ * desc: add to list
+ * input : 
+ * output: 
+ * cautious: list sort by acSysCd      
+ */
+void Add2List(TradeVolNode_S* pstNode, TradeVolNode_S** ppstHead)
+{
+    TradeVolNode_S*     pstCur              = NULL;
+    TradeVolNode_S*     pstPre              = NULL;
+    if (!*ppstHead)
+    {
+        *ppstHead = pstNode;
+        return;
+    }
+
+    pstCur = *ppstHead;
+
+    while (pstCur && (strcmp(pstCur->acSysCd, pstNode->acSysCd) < 0))
+    {
+        pstPre  = pstCur;
+        pstCur  = pstCur->pstNext;
+    }
+    
+    while (pstCur && (0 == strcmp(pstCur->acSysCd, pstNode->acSysCd)))
+    {
+        /* serach by transId */
+        if (0 == strcmp(pstCur->acTransId, pstNode->acTransId))
+        {
+            pstCur->uiCurVal = pstNode->uiCurVal;
+            memset(pstCur->acIsRefresh, 0, sizeof(pstCur->acIsRefresh));
+            pstCur->acIsRefresh[0] = ENABLE;
+            FREE(pstNode);
+            return;
+        }
+        pstPre  = pstCur;
+        pstCur  = pstCur->pstNext;
+    }
+
+    /* not find it, insert to list at pos pre 
+     * case:  ((!pstCur) || (strcmp(pstCur->acSysCd, pstNode->acSysCd) > 0)) 
+     */
+    pstNode->pstNext = pstCur;
+    if (pstPre)
+        pstPre->pstNext = pstNode;
+    else
+        *ppstHead = pstNode;
+    return;
+}
+
+/*
+ * desc: update trade volumn list
+ * input : 
+ * output: 
+ *        ERR if failed and OK if suc
+ */
+int UpdateTradeVolList(char* pcSysCd, char* pcTransId, unsigned int uiCount, TradeVolNode_S** ppstTradeVolHead)
+{
+    /* 1. find node */
+    /* 2. if exist, update it */
+    /* 3. if not exist, insert it */    
+    TradeVolNode_S*     pstTradeVol         = NULL;
+
+    pstTradeVol = InitTradeVolNode(pcSysCd, pcTransId, uiCount);
+    GOTO_IF_NULL(pstTradeVol, errorexit);
+    Add2List(pstTradeVol, ppstTradeVolHead);
+    return OK;
+errorexit:
+    FREE (pstTradeVol);
+    return OK;
+}
+
+void RefreshTradeVolList(TradeVolNode_S* pstTradeVolHead)
+{
+    TradeVolNode_S* pstTradeNode            = NULL;
+    pstTradeNode = pstTradeVolHead; 
+    while (pstTradeNode)
+    {
+        if (ENABLE == pstTradeNode->acIsRefresh[0])
+        {
+            pstTradeNode->acIsRefresh[0] = DISABLE;
+        }
+        else
+        {
+            if (ENABLE == pstTradeNode->acIsCtl[0])
+            {
+                pstTradeNode->uiCurVal = 0;
+                pstTradeNode->acIsLmt[0] = DISABLE;
+            }
+        }
+        pstTradeNode = pstTradeNode->pstNext;
+    }
+    return;
+}
+
+/*
+ * desc: update transaction volumn list
+ * input : 
+ * output: 
+ *        ERR if failed and OK if suc
+ */
+int GenTransVolList()
+{
+    PRTD("In func GenTransVolList\n");
+    EXEC SQL BEGIN DECLARE SECTION ;
+        char                acRequester     [30 + 1];
+        char                acTransactonId  [14 + 1];
+        int                 iTradeVolumn;                /* trade volumn        */
+        char                acStartTime     [19 + 1];    /* 2019-01-01 00:00:00 */
+        char                acEndTime       [19 + 1];    /* 2019-01-01 23:59:59 */
+    EXEC SQL END DECLARE SECTION ;
+
+    int             iRet                    = ERR;
+    char            acDate  [10 + 1]        = {0};
+    char            acSysCd [30 + 1]        = {0};
+    char            acTranId[14 + 1]        = {0};
+    int             iTradeVol               = 0;;
+
+    GetCurrentDate(acDate);
+    sprintf(acStartTime, "%s 00:00:00", acDate);
+    sprintf(acEndTime, "%s 23:59:59", acDate);
+
+    EXEC SQL DECLARE curTradeVolRcd CURSOR FOR 
+        SELECT
+           REQUESTER, TRANSACTION_ID, COUNT(*)
+        FROM 
+            LOG_ADAPTER_TRANS_RESULT
+        WHERE 
+            REQUEST_TIME > :acStartTime AND REQUEST_TIME < :acEndTime AND SUB_TRANSACTION_ID <> ''
+        GROUP BY TRANSACTION_ID, REQUESTER ORDER BY REQUESTER, TRANSACTION_ID;
+
+    CHECK_SQL(0, "The SELECT query failed.", EXIT);
+
+    EXEC SQL OPEN curTradeVolRcd;
+
+    while (1) 
+    {
+        memset(acRequester, 0, sizeof(acRequester));
+        memset(acTransactonId, 0, sizeof(acTransactonId));
+        iTradeVolumn = 0;
+        
+        memset(acSysCd, 0, sizeof(acSysCd));
+        memset(acTranId, 0, sizeof(acTranId));
+        iTradeVol = 0;
+
+        EXEC SQL FETCH curTradeVolRcd INTO 
+            :acRequester, 
+            :acTransactonId, 
+            :iTradeVolumn;
+
+        if (SQLCODE != 0) break;
+
+        strcpy(acSysCd, acRequester);
+        strcpy(acTranId, acTransactonId);
+        iTradeVol = iTradeVolumn;
+        
+        TrimAllSpace(acSysCd);
+        TrimAllSpace(acTranId);
+        iRet = UpdateTradeVolList(acSysCd, acTranId, (unsigned int)iTradeVol, &g_pstTradeVolHead);
+        if (iRet) goto errorexit;
+    }
+    
+    RefreshTradeVolList(g_pstTradeVolHead);
+
+errorexit:
+    if (100 != SQLCODE) PRTE("fetch error .sqlcode = [%d]\n", SQLCODE);
+    EXEC SQL CLOSE curTradeVolRcd;
+    return SQLCODE;
+}
+
+int DbCommit ()
+{
+    EXEC SQL commit work;
+    return sqlca.sqlcode;
+}
+
+int DbRollback ()
+{
+    EXEC SQL rollback work;
+    return sqlca.sqlcode;
+}
+
+TradeVolNode_S*  GetTradeNode(ChannelCfg_S* pstChannelCfg)
+{
+    TradeVolNode_S*         pstCurNode     = NULL;
+    
+    pstCurNode = g_pstTradeVolHead;
+
+    while (pstCurNode)
+    {
+        if (!strcmp(pstCurNode->acTransId, pstChannelCfg->acTransId) && !strcmp(pstCurNode->acSysCd, pstChannelCfg->acSysCd)) return pstCurNode;
+        pstCurNode = pstCurNode->pstNext;
+    }
+    return NULL;
+}
+
+/* update tbl xxx */
+int UpdateTbl_CFG_CHANEL_CTL(TradeVolNode_S* pstTradeVolHead)
+{
+    EXEC SQL BEGIN DECLARE SECTION ;
+        char                acSysCd[31];
+        char                acTransId[15];
+        char                acIsLmt[2];
+        int                 iLimitVal;
+        int                 iCurVal;
+    EXEC SQL END DECLARE SECTION ;
+    
+    TradeVolNode_S* pstTradeNode        = NULL;
+    int             iRet                = 0;
+
+    ChannelCfg_S    stChannelCfg;
+
+    EXEC SQL DECLARE curChannelCfg CURSOR FOR 
+        SELECT 
+            CHANNEL_NO, TRANS_ID, COALESCE(IS_LMT, '0') AS IS_LMT, COALESCE(LIMIT_VAL, 1000000) AS LIMIT_VAL, COALESCE(CURRENT_VAL, 0) AS CURRENT_VAL
+        FROM CFG_CHANNEL_CTL 
+        WHERE IS_CTL = '1';
+
+    CHECK_SQL(0, "The SELECT query failed.", EXIT);
+
+    EXEC SQL OPEN curChannelCfg;
+    while (1)
+    {
+        memset(acSysCd, 0, sizeof(acSysCd));
+        memset(acTransId, 0, sizeof(acTransId));
+        memset(acIsLmt, 0, sizeof(acIsLmt));
+        iCurVal     = 0;
+        iLimitVal   = 0;
+        memset(&stChannelCfg, 0, sizeof(stChannelCfg));
+        pstTradeNode = NULL;
+
+        EXEC SQL FETCH curChannelCfg INTO :acSysCd, :acTransId, :acIsLmt, :iLimitVal, :iCurVal;
+        if (SQLCODE != 0) break;
+
+        memcpy(stChannelCfg.acSysCd, acSysCd, strlen(acSysCd));
+        memcpy(stChannelCfg.acTransId, acTransId, strlen(acTransId));
+        memcpy(stChannelCfg.acIsLmt, acIsLmt, strlen(acIsLmt));
+
+        pstTradeNode = GetTradeNode(&stChannelCfg);
+        if (!pstTradeNode) 
+        {
+            PRTI("There is currently no transaction volumn. CHANNEL_NO = [%s], TRANS_NO = [%s].\n", stChannelCfg.acSysCd, stChannelCfg.acTransId);
+            iCurVal = 0;
+            acIsLmt[0] = DISABLE;
+
+            EXEC SQL UPDATE CFG_CHANNEL_CTL
+                 SET CURRENT_VAL = :iCurVal,
+                    IS_LMT = :acIsLmt
+                 WHERE CHANNEL_NO = :acSysCd 
+                     AND TRANS_ID = :acTransId ;
+
+            CHECK_SQL(0, "Update failed.", EXIT);
+            continue;
+        }
+
+        /* update list node */
+        if (iLimitVal != pstTradeNode->uiLimitVal) 
+            pstTradeNode->uiLimitVal = iLimitVal;
+
+        iCurVal = pstTradeNode->uiCurVal;
+        pstTradeNode->acIsCtl[0] = ENABLE;
+        pstTradeNode->acIsLmt[0] = acIsLmt[0] = ((pstTradeNode->uiCurVal > pstTradeNode->uiLimitVal) ? ENABLE : DISABLE);
+        PRTD("Update , CHANNEL_NO = [%s], TRANS_NO = [%s] CURRENT_VAL = [%8d] IS_LMT = [%s].\n", stChannelCfg.acSysCd, stChannelCfg.acTransId, pstTradeNode->uiCurVal, pstTradeNode->acIsLmt);
+
+        /* write to db */
+        EXEC SQL UPDATE CFG_CHANNEL_CTL
+             SET CURRENT_VAL = :iCurVal,
+                 IS_LMT = :acIsLmt
+             WHERE CHANNEL_NO = :acSysCd 
+                 AND TRANS_ID = :acTransId ;
+
+        CHECK_SQL(0, "Update failed.", EXIT);
+    }
+
+errorexit:
+    EXEC SQL CLOSE curChannelCfg;
+    iRet = DbCommit();
+    return iRet;
+}
+
+/* Do db test */
+int DoDBConnect()
+{
+    EXEC SQL BEGIN DECLARE SECTION ;
+        char   acUser   [128 + 1];
+        char   acPasswd [128 + 1];
+        char   acDbName [128 + 1];
+        int    iCount;
+    EXEC SQL END DECLARE SECTION ;
+
+    int             iRet                = ERR; 
+    int             iCnt                = 0; 
+
+    memset(&acPasswd[0], 0, sizeof(acPasswd));
+    memset(&acUser[0], 0, sizeof(acUser));
+    memset(&acDbName[0], 0, sizeof(acDbName));
+
+    if (getenv("DB2_DATEBASE1") != NULL)
+    {
+        memset(&acDbName[0], 0, sizeof(acDbName));
+        strcpy(&acDbName[0], getenv("DB2_DATEBASE1"));
+    }
+
+    if (getenv("DB2_USER1") != NULL)
+    {
+        memset(&acUser[0], 0, sizeof(acUser));
+        strcpy(&acUser[0], getenv("DB2_USER1"));
+    }
+
+    if (getenv("DB2_PASSWORD1") != NULL)
+    {
+        memset(&acPasswd[0], 0, sizeof(acPasswd));
+        strcpy(&acPasswd[0], getenv("DB2_PASSWORD1"));
+    }
+
+    /** connect to db **/
+    EXEC SQL CONNECT TO :acDbName USER :acUser USING :acPasswd;
+    CHECK_SQL(0, "Connect failed", EXIT);
+ 
+    /* select test */
+    EXEC SQL SELECT COUNT(*) into :iCount
+        FROM CFG_CHANNEL_CTL;
+ 
+    CHECK_SQL(0, "The SELECT query failed.", EXIT);
+    iCnt = iCount;
+ 
+    PRTD("Executed Successfuly\n\tiCount = [%d]\n", iCnt) ;
+
+errorexit:
+    return SQLCODE;
+}
+/* desc : load channel control info to share memory 
+ * in   :
+ * out  :
+ * cautious : shar memory struct 
+ *  -- [int]
+ *  -- [ChannelCfg_S]
+ *  -- [ChannelCfg_S]
+ *  -- ...
+ *  -- [ChannelCfg_S]
+ */
+int LoadChannelCtl2Shm(void* pShm)
+{
+    TradeVolNode_S* pstChannelNode      = NULL;
+    ChannelCfg_S*   pstChannelCfg       = NULL;
+    int             iCount              = 0;
+    int*            piCount             = 0;
+    
+    pstChannelNode   = g_pstTradeVolHead;
+    piCount    =  (int *)pShm;
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+
+    while (pstChannelNode && (*((char*)pstChannelNode) != '\0') && (iCount < MAX_CHANEL_CTL))
+    {
+        if (ENABLE == pstChannelNode->acIsCtl[0])
+        {
+            strcpy(pstChannelCfg->acIsCtl, pstChannelNode->acIsCtl);
+            strcpy(pstChannelCfg->acIsLmt, pstChannelNode->acIsLmt);
+            strcpy(pstChannelCfg->acSysCd, pstChannelNode->acSysCd);
+            strcpy(pstChannelCfg->acTransId, pstChannelNode->acTransId);
+            iCount++;
+            pstChannelCfg++;
+        }
+        pstChannelNode = pstChannelNode->pstNext;
+    }
+
+    if (MAX_CHANEL_CTL == iCount)
+    {
+        PRTE("[MAX_CHANEL_CTL] is readched. no more memory to load data, please check it.\n");
+    }
+    *piCount = iCount;
+    return OK;
+}
+
+void AddChannelCfg2Shm(TradeVolNode_S* pstChannelNode, void* pShm)
+{
+    /* find it ,if exist update it else add tail  */
+    int*            piCount             = NULL;
+    int             i                   = 0;
+    int             j                   = 0;
+    ChannelCfg_S*   pstChannelCfg       = NULL;
+
+    piCount = (int*)pShm;
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+
+    /* find it */
+    for (; i < *piCount; i++)
+    {
+        if ((0 == strcmp(pstChannelCfg[i].acTransId, pstChannelNode->acTransId))
+            && (0 == strcmp(pstChannelCfg[i].acSysCd, pstChannelNode->acSysCd)))
+        {
+            /* update */
+            memset(pstChannelCfg[i].acIsLmt, 0, sizeof(pstChannelCfg[i].acIsLmt));
+            strcpy(pstChannelCfg[i].acIsLmt, pstChannelNode->acIsLmt);
+            memset(pstChannelCfg[i].acIsCtl, 0, sizeof(pstChannelCfg[i].acIsCtl));
+            strcpy(pstChannelCfg[i].acIsCtl, pstChannelNode->acIsCtl);
+            memset(pstChannelCfg[i].acIsRefresh, 0, sizeof(pstChannelCfg[i].acIsRefresh));
+            pstChannelCfg[i].acIsRefresh[0] = ENABLE;
+            return;
+        }
+    }
+    /* find position to add */
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+    for (i = 0; 
+        (i < *piCount) && (strcmp(pstChannelCfg[i].acSysCd, pstChannelNode->acSysCd) < 0); 
+        i++);
+
+    while (0 == strcmp(pstChannelCfg[i].acSysCd, pstChannelNode->acSysCd))
+    {
+        if (DISABLE == pstChannelCfg[i].acIsCtl[0])
+        {
+            memset(pstChannelCfg + i, 0, sizeof(ChannelCfg_S));
+            strcpy(pstChannelCfg[i].acSysCd, pstChannelNode->acSysCd);
+            strcpy(pstChannelCfg[i].acTransId, pstChannelNode->acTransId);
+            strcpy(pstChannelCfg[i].acIsLmt, pstChannelNode->acIsLmt);
+            pstChannelCfg[i].acIsCtl[0] = ENABLE;
+            pstChannelCfg->acIsRefresh[0] = ENABLE;
+            return;
+        }
+        i++;
+    }
+    /* i is pos */
+
+    if (MAX_CHANEL_CTL - 1 == *piCount)
+    {
+        PRTE("MAX_CHANEL_CTL has been reached, please check it .\n");
+        return;
+    }
+
+    j = *piCount;
+    (*piCount)++;
+
+    while (j > i)
+    {
+        memset(pstChannelCfg + j, 0, sizeof(ChannelCfg_S));
+        strcpy(pstChannelCfg[j].acSysCd, pstChannelCfg[j - 1].acSysCd);
+        strcpy(pstChannelCfg[j].acTransId, pstChannelCfg[j - 1].acTransId);
+        strcpy(pstChannelCfg[j].acIsLmt, pstChannelCfg[j - 1].acIsLmt);
+        strcpy(pstChannelCfg[j].acIsCtl, pstChannelCfg[j - 1].acIsCtl);
+        strcpy(pstChannelCfg[j].acIsRefresh, pstChannelCfg[j - 1].acIsRefresh);
+        j--;
+    }
+
+    /* write ith */
+    memset(pstChannelCfg + i, 0, sizeof(ChannelCfg_S));
+    strcpy(pstChannelCfg[i].acSysCd, pstChannelNode->acSysCd);
+    strcpy(pstChannelCfg[i].acTransId, pstChannelNode->acTransId);
+    strcpy(pstChannelCfg[i].acIsLmt, pstChannelNode->acIsLmt);
+    pstChannelCfg[i].acIsCtl[0] = ENABLE;
+    pstChannelCfg->acIsRefresh[0] = ENABLE;
+
+    return;
+}
+
+void UpdateChannelCfg(void* pShm)
+{
+    int*            piCount             = NULL;
+    ChannelCfg_S*    pstChannelCfg        = NULL;
+    piCount= pShm;
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);   /* 开始存数量 */
+    while (pstChannelCfg && (*((char*)pstChannelCfg) != '\0'))
+    {
+        if (ENABLE != pstChannelCfg->acIsRefresh[0])
+        {
+            pstChannelCfg->acIsCtl[0] = DISABLE;
+        }
+        pstChannelCfg++;
+    }
+
+    return;
+}
+
+void ResetChannelCfgFlag(void* pShm)
+{
+    ChannelCfg_S*    pstChannelCfg        = NULL;
+    pstChannelCfg = (ChannelCfg_S*)((int*)pShm + 1);  
+    while (pstChannelCfg && (*((char*)pstChannelCfg) != '\0'))
+    {
+        pstChannelCfg->acIsRefresh[0] = DISABLE;
+        pstChannelCfg++;
+    }
+    return;
+}
+/* update chanel control info in memory */
+int UpdateChannelCtlInShm(void* pShm)
+{
+    /* 1. list 去更新 shm */
+    /* 2. shm  更新未更新的为不可用 */
+    TradeVolNode_S*     pstChannelNode      = NULL;
+    ChannelCfg_S*       pstChannelCfg       = NULL;
+    int*                piCount             = NULL;
+
+    pstChannelNode   = g_pstTradeVolHead;
+    piCount    =  (int *)pShm;
+
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+
+    while (pstChannelNode)
+    {
+        if (ENABLE == pstChannelNode->acIsCtl[0])
+        {
+            AddChannelCfg2Shm(pstChannelNode, pShm);
+        }
+
+        pstChannelNode = pstChannelNode->pstNext;
+    }
+
+    UpdateChannelCfg(piCount);
+
+    ResetChannelCfgFlag(piCount); 
+
+    return OK;
+}
+/* dump channel shm mem */
+void DumpChannelShm()
+{
+    PRTI("DumpChannelShm.>>>>>>>>>>>>>>>>>>>>>>\n");
+    ChannelCfg_S*   pstChannelCfg       = NULL;
+    int             i                   = 0;
+    int             iCount              = 0;
+    int*            piCount             = 0;
+    int             iShmId              = 0;
+    void*           pShm                = NULL;
+    iShmId = GetShm(getenv("SHMFILE1"), MAX_CHCTL_SHM_SIZE, 0666, &pShm);
+
+    piCount    =  (int *)pShm;
+    pstChannelCfg = (ChannelCfg_S*)(piCount + 1);
+    for (; i < *piCount; i++)
+    {
+        PRTI("CHANNEL_NO = [%s] TRAN_ID = [%s] IS_LMT = [%s] IS_CTL = [%s] IS_REF = [%s].\n", 
+            pstChannelCfg[i].acSysCd,
+            pstChannelCfg[i].acTransId,
+            pstChannelCfg[i].acIsLmt,
+            pstChannelCfg[i].acIsCtl,
+            pstChannelCfg[i].acIsRefresh
+        );
+
+    }
+    PRTI("DumpChannelShm.<<<<<<<<<<<<<<<<<<<<<<<\n");
+	UnlinkSHM(pShm);
+    return;
+}
+#define DSPLISTNODE(p) \
+        PRTI("CHNNEL_NO = [%s] TRANS_ID = [%s] IS_LMT = [%s] IS_CTL = [%s] LMT_VAL = [%d] CUR_VAL = [%d].\n", p->acSysCd, p->acTransId, p->acIsLmt, p->acIsCtl, p->uiLimitVal, p->uiCurVal)
+
+/** dump channel list */
+void  DumpChannelList()
+{
+    TradeVolNode_S* pstCurNode          = NULL;
+    PRTI("DumpChannelList.>>>>>>>>>>>>>>>>>\n");
+    
+    pstCurNode = g_pstTradeVolHead;
+    while (pstCurNode)
+    {
+        DSPLISTNODE(pstCurNode);
+        pstCurNode = pstCurNode->pstNext;
+    }
+    PRTI("DumpChannelList.<<<<<<<<<<<<<<<<<\n");
+    return;
+}
+
+/*  ftp_app_config -- only support add and modify. do not support del operation */
+int main(int argc, char *argv[])
+{
+    int             iRet                = ERR; 
+    int             iShmId              = 0;
+    void*           pShm                = NULL;
+    
+    iShmId = GetShm(getenv("SHMFILE"), MAX_CHCTL_SHM_SIZE, 0666 | IPC_CREAT, &pShm);
+    if (iShmId < 0) return ERR;
+
+    iRet = DoDBConnect();
+    if (iRet) goto errorexit;
+
+    /* Generate trade volumn list by LOG_ADAPTER_TRANS_RESULT */
+    iRet = GenTransVolList();
+    if (iRet) goto errorexit;
+
+    iRet = UpdateTbl_CFG_CHANEL_CTL(g_pstTradeVolHead);
+    if (iRet) goto errorexit;
+
+    iRet = LoadChannelCtl2Shm(pShm);
+    if (iRet) goto errorexit;
+    /* 
+     * 1. static trading volume by sysCd 
+     * 2. update tbl by new trading volume 
+     * 3. refresh shm by array  
+     * 4. sleep and do next
+     */
+    
+    for (; ;)
+    {
+        sleep(20);
+        iRet = GenTransVolList();
+        if (iRet) goto errorexit;
+
+        /* 2. Update tbl by list */
+        iRet = UpdateTbl_CFG_CHANEL_CTL(g_pstTradeVolHead);
+        if (iRet) goto errorexit;
+
+        /* 3. refresh shm by array */
+        iRet = UpdateChannelCtlInShm(pShm);
+        if (iRet) goto errorexit;
+    }
+
+errorexit:
+	UnlinkSHM(pShm);
+    EXEC SQL CONNECT RESET;
+    return iRet;
+}
