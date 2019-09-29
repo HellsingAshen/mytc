@@ -2,6 +2,37 @@
 #include <assert.h>
 
 #if  DESC("op_tree")
+
+/* 
+ * desc : destructed key-root
+ * in   :  
+ *          pstKeyRoot ---- destructed root
+ * out  :
+ * cautious :
+ */
+void DestructKey(
+    struct rb_root* pstKeyRoot,
+    Type_E      enKeyType
+    )
+{
+    Key_S*          pstKey           = NULL;
+    if (!pstKeyRoot && pstKeyRoot->rb_node)
+    {
+        struct rb_node* pstNode = pstKeyRoot->rb_node;
+        for (pstNode = rb_first(pstKeyRoot); pstNode;  pstNode = rb_next(pstNode))
+        {
+            pstKey = container_of(pstNode, Key_S, stNode);
+            rb_erase(&ndkey(pstKey), pstKeyRoot);
+            if (STRING == pstKey->enType)
+            {
+                FREE(pcvkey(pstKey));
+            }
+            FREE(pstKey);
+        }
+    }
+    return;
+}
+
 /* 
  * desc : find key node in rb_tree 
  * in   : 
@@ -49,8 +80,11 @@ int  SerachKey(
 }
 
 /* 
- * desc : insert a node into key-tree
+ * desc : insert a node into key_tree
  * in   : 
+ *          pstRoot ---- key_tree
+ *          iType ---- key type[INT, STRING]
+ *          pkv   ---- key value
  * out  : 
  *        0  ---- suc 
  *        -1 ---- failed
@@ -74,7 +108,7 @@ int InsertKey(
     iRet = SerachKey(pstRoot, iType, pkv, (void*)&pstKey);
     if (iRet)
     {
-        PRTE("key has been exist. please check it.\n");
+        LOGE("key has been exist. please check it.\n");
         *ppstNew = pstKey;
         return F_OK;
     }
@@ -93,22 +127,25 @@ int InsertKey(
             memset(pcvkey(pstNew), 0, strlen(pkv) + 1);
             memcpy(pcvkey(pstNew), pkv, strlen(pkv));
         }
-        
-        //ppstNode = ((NULL == pstKey) ? &pstRoot : ((CMPVALBYTYPE(iType, pstKey, pkv) > 0) ? &(ndkey(pstKey).rb_left) : &(ndkey(pstKey).rb_right))); /* position */
-        if (!pstKey)
-        {
-            ppstNode = &(pstRoot->rb_node);
-        }
-        else
-        {
-            ppstNode = ((CMPVALBYTYPE(iType, pstKey, pkv) > 0) ? &(ndkey(pstKey).rb_left) : &(ndkey(pstKey).rb_right)); /* position */
-        }
+        ppstNode = ((NULL == pstKey) 
+                        ? &pstRoot->rb_node 
+                        : ((CMPVALBYTYPE(iType, pstKey, pkv) > 0) 
+                            ? &(ndkey(pstKey).rb_left) 
+                            : &(ndkey(pstKey).rb_right))); /* position */
         rb_link_node(&ndkey(pstNew), &ndkey(pstKey), ppstNode);
         rb_insert_color(&ndkey(pstNew), pstRoot);
     }
     return OK;
 }
 
+/*
+ * desc : delete keynode in key_tree
+ * in   :
+ *          pstRoot ---- key_tree
+ *          pstKey  ---- to be deleted keynode    
+ * out  :
+ * cautious   :
+ */
 void DeleteKeyNode(
     struct rb_root* pstRoot, 
     Key_S*          pstKey
@@ -122,41 +159,48 @@ void DeleteKeyNode(
     FREE(pstKey);
     return;
 }
-/*
- * @ desc   :
- * @ in     :
- * @ out    : 
- * @ cautious :  only do del key-node in tree 
- */ 
-#if 0
-void DeleteKey(
-    struct rb_root* pstRoot, 
-    int     iType,
-    void*   pkv
-    )
-{
-    Key_S*              pstKey              = NULL;
-    int                 iRet                = 0;
-    iRet   = SerachKey(pstRoot, iType, pkv, &pstKey);
-    if (iRet)
-    {
-        /* free object at up level */
-        rb_erase(&pstKey->stNode, pstRoot);
-        free(pstKey);
-    }
-    else
-    {
-        PRTE("No data found.\n");
-    }
-    return;
-}
-#endif
 #endif
 
+#if DESC("op_array")
+/* 
+ * desc : destructed object array
+ * in   :  
+ *          pstObj ---- destructed array
+ * out  :
+ * cautious :
+ */
+void DestructObj(
+    Object_S*   pstObj
+    )
+{
+
+    int             i               = 0;
+    Value_S*        pstVal          = NULL;
+    for (pstVal = vobject(pstObj); i < capobject(pstObj); i++)
+    {
+        if (mvalues(pstVal + i) && STRING == tvalues(pstVal + i))
+        {
+            FREE(pvalues(pstVal + i));
+        }
+    }
+    FREE(pstVal);
+    return;
+}
+
+/*
+ * @ desc   : adjust object array and set next available index after delete and insert operations
+ * @ in     :
+ *              pstObj ---- object array
+ * @ out    : 
+ * @ cautious : current implementation of dynamic expansion
+ *            TODO: dynamic reduction while cntobject(o) <= 1/3 capobject(o) , capobject(o0 = 1/2 capobject(o)
+ */ 
 int AdjustObj(Object_S* pstObj)
 {
     int             iOldCapacity    = capobject(pstObj);
     int             i               = 0; 
+    
+    assert(capobject(pstObj) != MAP_MAX_SIZE);
 
     if (capobject(pstObj) == ++cntobject(pstObj))
     {
@@ -165,13 +209,15 @@ int AdjustObj(Object_S* pstObj)
         memset(vobject(pstObj) + iOldCapacity, 0, (capobject(pstObj) - iOldCapacity) * sizeof(Value_S));
     }
 
+    /* backward search */
     for (i = nobject(pstObj); i < capobject(pstObj) && (vobject(pstObj) + i)->iMark; i++);
     if (i == capobject(pstObj))
     {
+        /* forward serach */
         for (i = nobject(pstObj); i >= 0 && (vobject(pstObj) + i)->iMark; i--);
         if (i < 0)
         {
-            PRTE("can not find space to add obj. please check it .\n");
+            LOGE("can not find space to add obj. please check it .\n");
             nobject(pstObj) = -1;
             return F_OK;
         }
@@ -179,7 +225,15 @@ int AdjustObj(Object_S* pstObj)
     nobject(pstObj) = i;
     return OK;
 }
-    
+
+/*   
+ * @ desc   : remove object in pstObj whose index is equal to iIndex
+ * @ in     :
+ *              pstObj ---- array object
+ *              iIndex ---- removed index
+ * @ out    : 
+ * @ cautious : 
+ */
 void DeleteObj(
     Object_S*       pstObj,
     int             iIndex
@@ -199,6 +253,16 @@ void DeleteObj(
     return;
 }
 
+/* 
+ * desc : add an object into object and carry out inserted position 
+ * in   :
+ *          pstObj ---- object array
+ *          enType ---- inserted object-type
+ *          pVal   ---- inserted object-val
+ * out  :
+ *          piIndex ---- inserted position 
+ *          return value ----  success ok, others failure
+ */
 int ObjAddEle(
     Object_S*       pstObj,
     Type_E          enType,
@@ -210,7 +274,7 @@ int ObjAddEle(
 
     if ((vobject(pstObj) + nobject(pstObj))->iMark)
     {
-        PRTE("inner error in object array, please check it");
+        LOGE("can get next available index, please chech it.\n");
         //AdjustObj(pstObj);
         return F_OK;
     }
@@ -232,8 +296,17 @@ int ObjAddEle(
 
     return OK;
 }
+#endif
 
 #if DESC("op_map")
+/* 
+ * desc : init a map
+ * in   : 
+ *          enType  ---- type of created map
+ * out  :
+ *          return value ---- created map
+ * cautious :
+ */
 Map_S* MapInit(Type_E enType)
 {
     Map_S*              pstMap              = malloc(sizeof(*pstMap));
@@ -249,6 +322,16 @@ Map_S* MapInit(Type_E enType)
     return pstMap;
 }
 
+/*
+ * desc : search map by key-type and key value
+ * in   :
+ *          enKeyType ---- key-type
+ *          pKey      ---- key-val
+ * out  :
+ *          piType    ---- value-type
+ *          ppVal     ---- value-val
+ * cautious :
+ */
 int SearchMap(
     Map_S*          pstMap,
     Type_E          enKeyType,
@@ -264,7 +347,7 @@ int SearchMap(
     iRet = SerachKey(&pstMap->stKeyRoot, enKeyType, pKey, (void*)&pstKey);
     if (0 == iRet) /* not found */
     {
-        PRTE("not found  node.\n");
+        LOGE("not found  node.\n");
         return F_OK;
     }
     *piType = tvalues(vobject(&(pstMap->stObject)) + idxkey(pstKey));
@@ -272,6 +355,15 @@ int SearchMap(
     return OK;
 }
 
+/*
+ * desc : add KEY[key_type, key_val]-VALUE[val_type, val_val] into map
+ * in   :
+ *          enKeyType ---- key_type
+ *          pKey      ---- key_val
+ *          enValueType ---- val_type
+ *          pVal        ---- val_val
+ * cautious:
+ */
 int Add2Map(
     Map_S*          pstMap, 
     Type_E          enKeyType,
@@ -289,20 +381,27 @@ int Add2Map(
     iRet = InsertKey(&pstMap->stKeyRoot, enKeyType, pKey, &pstNew);
     if (F_OK == iRet)
     {
-        PRTE("duplicate key.\n");
+        LOGE("duplicate key.\n");
         return iRet;
     }
 
     iRet = ObjAddEle(&pstMap->stObject, enValueType, pVal, &iIndex);
     if (F_OK == iRet)
     {
-        PRTE("ObjAddEle error.\n");
+        LOGE("ObjAddEle error.\n");
         return iRet;
     }
     idxkey(pstNew) = iIndex;
     return iRet;
 }
 
+/*
+ * desc :delete map_elem whose key is [enValueType, pKey]
+ * in   :
+ *          enKeyType ---- key_type
+ *          pKey      ---- key_val
+ * cautious :
+ */
 int DelFromMap(
     Map_S*           pstMap,
     Type_E          enKeyType,
@@ -316,8 +415,8 @@ int DelFromMap(
     iRet = SerachKey(&pstMap->stKeyRoot, enKeyType, pKey, (void*)&pstKey);
     if (0 == iRet) /* not found */
     {
-        PRTE("not found del node. please conform it .\n");
-        return OK;
+        LOGE("not found del node. please conform it .\n");
+        return F_OK;
     }
     
     DeleteObj(&pstMap->stObject, idxkey(pstKey));
@@ -325,47 +424,15 @@ int DelFromMap(
 
     return OK;
 }
-void DestructObj(
-    Object_S*   pstObj
-    )
-{
 
-    int             i               = 0;
-    Value_S*        pstVal          = NULL;
-    for (pstVal = vobject(pstObj); i < capobject(pstObj); i++)
-    {
-        if (mvalues(pstVal + i) && STRING == tvalues(pstVal + i))
-        {
-            FREE(pvalues(pstVal + i));
-        }
-    }
-    FREE(pstVal);
-    return;
-}
-
-void DestructKey(
-    struct rb_root* pstKeyRoot,
-    Type_E      enKeyType
-    )
-{
-    Key_S*          pstKey           = NULL;
-    if (!pstKeyRoot && pstKeyRoot->rb_node)
-    {
-        struct rb_node* pstNode = pstKeyRoot->rb_node;
-        for (pstNode = rb_first(pstKeyRoot); pstNode;  pstNode = rb_next(pstNode))
-        {
-            pstKey = container_of(pstNode, Key_S, stNode);
-            rb_erase(&ndkey(pstKey), pstKeyRoot);
-            if (STRING == pstKey->enType)
-            {
-                FREE(pcvkey(pstKey));
-            }
-            FREE(pstKey);
-        }
-    }
-    return;
-}
-
+/* 
+ * desc : destructed map
+ * in   :  
+ *          pstMap ---- destructed map
+ *          enKeyType ---- destructed map type
+ * out  :
+ * cautious :
+ */
 void DestructMap(
     Map_S*      pstMap,
     Type_E      enKeyType

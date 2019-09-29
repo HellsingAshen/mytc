@@ -3,25 +3,7 @@
 #include "rbtree.h"
 #include <string.h>
 
-#define INTCMP(i1, i2)              (((unsigned long long )i1 > (unsigned long long)i2) ?  1 : (((unsigned long long)i1 < (unsigned long long)i2 ) ? -1 : 0))
-#define CMPVALBYTYPE(t, n, v2)      ((INT == t) ? (INTCMP(ivkey(n), v2)) : (strcmp(pcvkey(n), (char*)v2)))
-#define LOGE        printf
-#define DESC(a)     (1)
-#define F_OK        -1
-#define OK          0
-
-#define PRTE printf
-
-#define MAP_MAX_SIZE                (65536)
-#define MAP_DEFAULT_SIZE            (32)
-
-#define     FREE(p) \
-    do \
-    { \
-        if (p) free(p); p = NULL; \
-    } while (0);
-
-#define MIN(n1, n2) ((n1 > n2) ? n2 : n1)
+#include "macro.h"
 
 typedef enum 
 {
@@ -42,10 +24,10 @@ typedef struct tagValue_S
     Value_U         unVal;
     int             iMark;          /* tag isused */
 }Value_S;
-#define tvalues(o)      ((o)->enType)
-#define ivalues(o)      ((o)->unVal.i)
-#define pvalues(o)      ((o)->unVal.pv)
-#define mvalues(o)      ((o)->iMark)
+#define tvalues(v)      ((v)->enType)
+#define ivalues(v)      ((v)->unVal.i)
+#define pvalues(v)      ((v)->unVal.pv)
+#define mvalues(v)      ((v)->iMark)
 
 typedef struct tagObject_S
 {
@@ -121,4 +103,3 @@ void DestructMap(
     Map_S* pstMap,
     Type_E      enKeyType
     );
-    /* TODO: */
