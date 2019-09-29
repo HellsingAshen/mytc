@@ -84,7 +84,7 @@ int InsertKey(
         memset(pstNew, 0, sizeof(*pstNew));
         if (INT == (tkey(pstNew) = iType))
         {
-            ivkey(pstNew) = (int)pkv;
+            ivkey(pstNew) = (unsigned long long)pkv;
         }
         else
         {
@@ -180,7 +180,7 @@ int AdjustObj(Object_S* pstObj)
     return OK;
 }
     
-void DelObj(
+void DeleteObj(
     Object_S*       pstObj,
     int             iIndex
     )
@@ -217,7 +217,7 @@ int ObjAddEle(
 
     if (INT == (tvalues(vobject(pstObj) + nobject(pstObj))=enType))
     {
-        ivalues(vobject(pstObj) + nobject(pstObj)) = (int)pVal;
+        ivalues(vobject(pstObj) + nobject(pstObj)) = (unsigned long long)pVal;
     }
     else
     {
@@ -311,7 +311,7 @@ int DelFromMap(
 {
     int             iRet                = 0;
     Key_S*          pstKey              = NULL;
-    assert( pstMap != NULL);
+    assert(pstMap != NULL);
 
     iRet = SerachKey(&pstMap->stKeyRoot, enKeyType, pKey, (void*)&pstKey);
     if (0 == iRet) /* not found */
@@ -320,14 +320,59 @@ int DelFromMap(
         return OK;
     }
     
-    DelObj(&pstMap->stObject, idxkey(pstKey));
+    DeleteObj(&pstMap->stObject, idxkey(pstKey));
     DeleteKeyNode(&pstMap->stKeyRoot, pstKey);
 
     return OK;
 }
-
-void DestructMap(Map_S* pstMap)
+void DestructObj(
+    Object_S*   pstObj
+    )
 {
 
+    int             i               = 0;
+    Value_S*        pstVal          = NULL;
+    for (pstVal = vobject(pstObj); i < capobject(pstObj); i++)
+    {
+        if (mvalues(pstVal + i) && STRING == tvalues(pstVal + i))
+        {
+            FREE(pvalues(pstVal + i));
+        }
+    }
+    FREE(pstVal);
+    return;
+}
+
+void DestructKey(
+    struct rb_root* pstKeyRoot,
+    Type_E      enKeyType
+    )
+{
+    Key_S*          pstKey           = NULL;
+    if (!pstKeyRoot && pstKeyRoot->rb_node)
+    {
+        struct rb_node* pstNode = pstKeyRoot->rb_node;
+        for (pstNode = rb_first(pstKeyRoot); pstNode;  pstNode = rb_next(pstNode))
+        {
+            pstKey = container_of(pstNode, Key_S, stNode);
+            rb_erase(&ndkey(pstKey), pstKeyRoot);
+            if (STRING == pstKey->enType)
+            {
+                FREE(pcvkey(pstKey));
+            }
+            FREE(pstKey);
+        }
+    }
+    return;
+}
+
+void DestructMap(
+    Map_S*      pstMap,
+    Type_E      enKeyType
+    )
+{
+    DestructObj(&pstMap->stObject);
+    DestructKey(&pstMap->stKeyRoot, enKeyType);
+    FREE(pstMap);
 }
 #endif

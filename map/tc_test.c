@@ -14,10 +14,20 @@ int main()
     void*               pVal                = NULL;
     printf("hello c.\n");
     Map_S*              pstIntKey           = NULL;
+    Map_S*              pstStrKey           = NULL;
 
     pstIntKey = MapInit(INT);
     assert(pstIntKey != NULL);
 
+    pstStrKey = MapInit(STRING);
+    assert(pstStrKey != NULL);
+
+    iRet = Add2Map(pstStrKey, STRING, "six", INT, 6);
+    assert(0 == iRet);
+
+    iRet = Add2Map(pstStrKey, STRING, "seven", STRING, "7th");
+    assert(0 == iRet);
+#if 0
     /* add test */
     for (; i < 3; i++)
     {
@@ -33,6 +43,8 @@ int main()
 
     iRet = ADD2IMAP(pstIntKey, 5, STRING, "five");
     assert(0 == iRet);
+#endif
+
 
 #if 0
     /* serach  test*/
@@ -53,6 +65,8 @@ int main()
 #endif
 
      
+    DestructMap(pstIntKey, INT);
+    DestructMap(pstStrKey, STRING);
 
     return 0;
 }

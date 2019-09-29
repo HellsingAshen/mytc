@@ -3,9 +3,8 @@
 #include "rbtree.h"
 #include <string.h>
 
-//int intcmp(int i1, int i2){ return ((i1>i2) ? 1 : ((i1<i2) ? -1 : 0));}
-#define INTCMP(i1, i2)              (((int)i1 > (int)i2) ?  1 : (((int)i1 < (int)i2 ) ? -1 : 0))
-#define CMPVALBYTYPE(t, n, v2)      ((INT == t) ? (INTCMP((int)ivkey(n), (int)v2)) : (strcmp(pcvkey(n), (char*)v2)))
+#define INTCMP(i1, i2)              (((unsigned long long )i1 > (unsigned long long)i2) ?  1 : (((unsigned long long)i1 < (unsigned long long)i2 ) ? -1 : 0))
+#define CMPVALBYTYPE(t, n, v2)      ((INT == t) ? (INTCMP(ivkey(n), v2)) : (strcmp(pcvkey(n), (char*)v2)))
 #define LOGE        printf
 #define DESC(a)     (1)
 #define F_OK        -1
@@ -118,5 +117,8 @@ int DelFromMap(
     Type_E          enKeyType,
     void*           pKey
     );
-void DestructMap(Map_S* pstMap);
+void DestructMap(
+    Map_S* pstMap,
+    Type_E      enKeyType
+    );
     /* TODO: */
