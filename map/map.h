@@ -99,7 +99,7 @@ int DelFromMap(
     Type_E          enKeyType,
     void*           pKey
     );
+
 void DestructMap(
-    Map_S* pstMap,
-    Type_E      enKeyType
+    Map_S* pstMap
     );

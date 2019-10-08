@@ -2,6 +2,33 @@
 #include <assert.h>
 
 #if  DESC("op_tree")
+void DestructNode(
+    struct rb_node* pstRoot
+    )
+{
+    Key_S*          pstKey          = NULL;
+
+    if (!pstRoot) return;
+    if (pstRoot->rb_left)
+    {
+        DestructNode(pstRoot->rb_left);
+        pstRoot->rb_left = NULL;
+    }
+
+    if (pstRoot->rb_right)
+    {
+        DestructNode(pstRoot->rb_right);
+        pstRoot->rb_right = NULL;
+    }
+
+    pstKey = container_of(pstRoot, Key_S, stNode);
+    if (STRING == pstKey->enType)
+    {
+        FREE(pcvkey(pstKey));
+    }
+    FREE(pstKey);
+    return;
+}
 
 /* 
  * desc : destructed key-root
@@ -11,24 +38,12 @@
  * cautious :
  */
 void DestructKey(
-    struct rb_root* pstKeyRoot,
-    Type_E      enKeyType
+    struct rb_root* pstKeyRoot
     )
 {
-    Key_S*          pstKey           = NULL;
-    if (!pstKeyRoot && pstKeyRoot->rb_node)
+    if (pstKeyRoot && pstKeyRoot->rb_node)
     {
-        struct rb_node* pstNode = pstKeyRoot->rb_node;
-        for (pstNode = rb_first(pstKeyRoot); pstNode;  pstNode = rb_next(pstNode))
-        {
-            pstKey = container_of(pstNode, Key_S, stNode);
-            rb_erase(&ndkey(pstKey), pstKeyRoot);
-            if (STRING == pstKey->enType)
-            {
-                FREE(pcvkey(pstKey));
-            }
-            FREE(pstKey);
-        }
+        DestructNode(pstKeyRoot->rb_node);
     }
     return;
 }
@@ -182,8 +197,14 @@ void DestructObj(
         {
             FREE(pvalues(pstVal + i));
         }
+
+        mvalues(pstVal + i) = 0;
+        tvalues(pstVal + i) = 0;
+        memset(&vobject(pstObj)->unVal, 0, sizeof(vobject(pstObj)->unVal));
     }
     FREE(pstVal);
+    vobject(pstObj) = NULL;
+    nobject(pstObj) = capobject(pstObj) = cntobject(pstObj) = 0;
     return;
 }
 
@@ -347,7 +368,7 @@ int SearchMap(
     iRet = SerachKey(&pstMap->stKeyRoot, enKeyType, pKey, (void*)&pstKey);
     if (0 == iRet) /* not found */
     {
-        LOGE("not found  node.\n");
+        LOGE("No target node found.\n");
         return F_OK;
     }
     *piType = tvalues(vobject(&(pstMap->stObject)) + idxkey(pstKey));
@@ -434,12 +455,11 @@ int DelFromMap(
  * cautious :
  */
 void DestructMap(
-    Map_S*      pstMap,
-    Type_E      enKeyType
+    Map_S*      pstMap
     )
 {
     DestructObj(&pstMap->stObject);
-    DestructKey(&pstMap->stKeyRoot, enKeyType);
+    DestructKey(&pstMap->stKeyRoot);
     FREE(pstMap);
 }
 #endif
