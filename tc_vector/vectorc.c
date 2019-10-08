@@ -278,15 +278,14 @@ void* Vct_Popback(Vector_S* pstVector)
     return pObj;
 
 }
-/* @ desc   : Vct_SetIndex ¿¿ vct->ppData[index] = pObj
+/* @ desc   : Vct_SetIndex
  * @ input  :  
  *              pstVector
  *              index
  *              pObj
  *             
  * @ output :   FAILED or SUC
- * @ cautious:  ¿¿¿uiIndex > pstVector->uiCapacity ,¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿vector¿¿¿ 
- *              ¿¿¿¿¿,¿¿uiIndex ¿¿¿¿¿¿¿, ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿ 
+ * @ cautious:  
  */
 UINT32 Vct_SetIndex(Vector_S* pstVector, unsigned int uiIndex, void* pObj)
 {
