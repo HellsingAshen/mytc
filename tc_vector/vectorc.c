@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "vectorc.h"
-#include "alias_type.h"
+#include "alias.h"
 #include "pub.h"
 #define     OK      (0)
 #define     ERR     (-1)
@@ -20,6 +20,7 @@ UINT32    Vct_Construct(
 {
     int                     iRet                = OK;
     Vector_S*               pstVector           = NULL;
+
     do 
     {
         pstVector   = (Vector_S*)MALLOC(sizeof(Vector_S));           
@@ -34,15 +35,12 @@ UINT32    Vct_Construct(
     }
     while (0);
 
-
     if (iRet)
     {
         FREE(pstVector->ppData);
         FREE(pstVector);
     }
-
     *ppstVector = pstVector;
-
     return iRet;
 }
 
@@ -86,7 +84,6 @@ void Vct_Destruct(Vector_S** ppstVector)
 
     pstVector->uiCapacity = 0;
     FREE(pstVector->ppData);
-
     FREE(pstVector);
     *ppstVector	= NULL;
 
@@ -291,7 +288,7 @@ UINT32 Vct_SetIndex(Vector_S* pstVector, unsigned int uiIndex, void* pObj)
 {
     /* 1.’“µΩŒª÷√
        2. ÃÊªª
-       */
+     */
     UINT32              uiRet               = 0;
     if (!pstVector || !pObj)
     {

@@ -59,11 +59,6 @@ int main (int argc, char** argv)
 
     }
 
-    /* test push */
-    
-
-printf("---------------------------------\n");
-
     /* test destruct */
     Vct_Destruct(&pstVctor);
    

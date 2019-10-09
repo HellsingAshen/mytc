@@ -1,6 +1,8 @@
 #ifndef VECTORC_H
 #define VECTORC_H
-#include "alias_type.h"
+
+#include <string.h>
+#include "alias.h"
 
 #define         VECTOR_CAPACITY_DEFAULT             (64)
 #define         VECTOR_CAPACITY_MAX                 (128<<8)
