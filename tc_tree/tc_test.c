@@ -101,7 +101,7 @@ void PrtTreeAsce(struct rb_root* pstRoot)
 int main()
 {
     printf("hello c.\n");
-    int aiArrSc[] = {5,4, 3, 2, 1, 9, 8, 7};
+    int aiArrSc[] = {5,4, 3, 2, 4, 1, 9, 8, 7};
     Score_S* pstScNew  = NULL;
     struct rb_root stScTree = RB_ROOT;
     int i = 0;
@@ -109,7 +109,13 @@ int main()
     {
         pstScNew = malloc(sizeof(Score_S));
         pstScNew ->iScore = aiArrSc[i];
-        InsertScore(&stScTree, pstScNew);
+        int iRet = 0;
+        iRet = InsertScore(&stScTree, pstScNew);
+        if (iRet)
+        {
+            printf(" construct rbtree error, value = [%d] index = [%d]\n", aiArrSc[i], i);
+            return iRet;
+        }
     }
     PrtTreeAsce(&stScTree);
 
