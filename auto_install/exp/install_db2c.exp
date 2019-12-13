@@ -1,0 +1,24 @@
+#!/usr/bin/expect 
+	
+# $CMD yes yes SERVER no
+set shell_cmd [lindex $argv 0]
+set accept_terms [lindex $argv 1]
+set default_directory [lindex $argv 2]
+set product_choice [lindex $argv 3]
+
+#
+spawn $shell_cmd 
+
+expect "To accept those terms, enter*"
+send "$accept_terms\r"
+
+expect "Install into default directory*"
+send "$default_directory\r"
+
+expect "Specify one of the following keywords to install DB2 products*"
+send "$product_choice\r"
+
+interact
+
+#exit 0
+
