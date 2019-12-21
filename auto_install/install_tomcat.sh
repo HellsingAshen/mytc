@@ -4,14 +4,18 @@
 # $4 app_user
 # $5 tomcat_path
 
-source $3/common.sh
-#tomcat_path=""
+source $(dirname $0)/common.sh
 
 function check_install_tomcat(){
+    local scp_base_path=`dirname $3`
+    local log_path=$scp_base_path/log
+    local log_file=$log_file/process.log
+    local log_ret=$log_path/ret
+
     # check exist 
     if [ -d $5/bin ]; then
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`]Tomcat install suc.">>$1/process.log
-        echo "1">$1/ret
+        logd    "Tomcat install suc."   $log_file
+        logc    "1"                     $log_ret
         exit 0;
     fi
 
@@ -21,8 +25,8 @@ function check_install_tomcat(){
     comvar_install_pkg_name=""
     get_install_package_name "$find_str";
     if [ -z $comvar_install_pkg_name ]; then
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`]no tomcat package found.">>$1/process.log
-        echo "0">$1/ret
+        loge    "no tomcat package found."  $log_file
+        logc    "1"                         $log_ret
         exit 0;
     fi
 
@@ -32,21 +36,20 @@ function check_install_tomcat(){
     if [ ! -d $5 ]; then
         mkdir -p $5 ;
         if [ ! -d $5 ]; then
-            echo "[`date "+%Y-%m-%d %H:%M:%S"`]permission denied. please check current user.">>$1/process.log
-            echo "0">$1/ret
+            loge    "permission denied. please check current user." $log_file
+            logc    "0"                                             $log_ret
             exit 0;
         fi
     fi
 
-    {
-         sh $3/show_progress.sh $tomcat_path 14995413 "install_tomcat..."
-    }&
+    #{
+    #     sh $3/show_progress.sh $tomcat_path 14995413 "install_tomcat..."
+    #}&
 
     if [ ! -d $5/bin ]; then
         cmd_uncompress=""
         cmd_uncompress_dir=""
-	get_uncompress_cmd `basename  $install_pkg_full_name`
-        #$cmd_uncompress $install_pkg_full_name $cmd_uncompress_dir $5  --strip-components "1" >/dev/null &;
+        get_uncompress_cmd `basename  $install_pkg_full_name`
         $cmd_uncompress $install_pkg_full_name $cmd_uncompress_dir $5  --strip-components "1" >/dev/null;
         chmod -R 777 $5;
 
@@ -55,17 +58,16 @@ function check_install_tomcat(){
             echo "export PATH=$5/bin:$PATH">>/etc/profile
         fi
 
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`]Tomcat install path is [ tomcat_path = $5 ]">>$1/process.log
-        echo "1">$1/ret
+        logi    "Tomcat install path is [ tomcat_path = $5 ]"   $log_file
+        logc    "1"                                             $log_ret
     else 
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`]Tomcat install failed.">>$1/process.log
-        echo "0">$1/ret
+        loge    "Tomcat install failed."    $log_file
+        logc    "0"                         $log_ret
     fi
-    wait;
+    # wait;
 
-    echo "[`date "+%Y-%m-%d %H:%M:%S"`]Tomcat install suc.">>$1/process.log
-    echo "1">$1/ret
-    
+    logi    "Tomcat install suc."   $log_file
+    logc    "1"                     $log_ret
 }
 
 check_install_tomcat $1 $2 $3 $4 $5;

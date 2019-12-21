@@ -1,0 +1,26 @@
+#!/usr/bin/expect 
+	
+# $CMD yes yes SERVER no
+set shell_cmd [lindex $argv 0]
+set default_directory [lindex $argv 1]
+set product_choice [lindex $argv 2]
+set purescale [lindex $argv 3]
+
+#
+spawn $shell_cmd 
+
+expect "Install into default directory*"
+send "$default_directory\r"
+
+expect "Specify one of the following keywords to install DB2 products*"
+send "SERVER\r"
+
+#expect "Do you want to install the DB2 pureScale Feature? [yes/no]*"
+expect "pureScale Feature*"
+send "no\r"
+
+#expect "Task \#59 end*"
+interact
+
+#exit 0
+

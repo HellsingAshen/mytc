@@ -3,9 +3,10 @@ set name [lindex $argv 0]
 set pwd [lindex $argv 1]
 set cmd [lindex $argv 2]
 
-#spawn su - root -c  "find / -name db2icrt | wc -l"
-spawn su - $name -c  "$cmd"
+spawn su - $name -c "$cmd"
 
 expect "Password*"
+
 send "$pwd\r"
+
 interact

@@ -1,5 +1,5 @@
 # $1 -- db2instance
-# $2 -- pkg_path
+# $2 -- log path
 # $3 -- db instance user
 # $4 -- db location 1 -- LOCAL 2 -- REMOTE
 # $5 -- db server ip
@@ -7,12 +7,17 @@
 # $7 -- db name 
 # $8 -- db node name 
 # $9 -- app_user_pwd
+
+source $(dirname $0)/common.sh
+
+log_file=$2/process.log
+log_ret=$2/ret
+
 if [ $4 -eq 1 ] ; then 
     port=`cat /etc/services | grep db2c_$1 | awk '{print $2}' | awk -F/ '{print $1}'`
     if [ -z $port ]; then 
-        echo "error. not found port in file, please check instance "
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`]can't find $1 port in file. please check db instance $1">>$2/process.log
-        echo "0">$2/ret
+        loge    "can't find $1 port in file. please check db instance $1"   $log_file
+        logc    "0"                                                         $log_ret
         exit 0;
     fi
 
@@ -21,14 +26,14 @@ if [ $4 -eq 1 ] ; then
         su - $3 -c "db2start"
         count=`netstat -an | grep $port | wc -l`
         if [ $count -ne 1 ]; then 
-            echo "[`date "+%Y-%m-%d %H:%M:%S"`]db2start listen port[$port] failed. please check it.">>$2/process.log
-            echo "0">$2/ret
+            loge    "db2start listen port[$port] failed. please check it."  $log_file
+            logc    "0"                                                     $log_ret
             exit 0;
         fi
     fi
 
-    echo "[`date "+%Y-%m-%d %H:%M:%S"`]db2start listen port[$port] suc.">>$2/process.log
-    echo "1">$2/ret
+    logi    "db2start listen port[$port] suc."  $log_file
+    logc    "1"                                 $log_ret
 
 else 
     ret=`su - $3 -c "db2 list node directory | grep \"Node name\" | grep -v grep | grep -i $8 | wc -l"`
@@ -40,12 +45,11 @@ else
     su - $3 -c "db2 connect to $7 user $3 using $9; db2 \"select 1 from SYSIBM.SYSDUMMY1 \" |  awk 'NR==2 {print}'">$2/tmp_ret;
     ret=`cat $2/tmp_ret | awk 'END {print}'`
     if [ ${ret:0:1} != "1" ];then
-        echo "----> db2 connect test failed. please check it after installation ."
-        echo "[`date "+%Y-%m-%d %H:%M:%S"`] db2 connect to $7 user $3 using $9. connect test failed;">>$2/process.log
-        echo "1">$2/ret
+        loge    "db2 connect to $7 user $3 using $9. connect test failed;"  $log_file
+        logc    "1" $log_ret
         exit 0;
     fi
 fi
 
-echo "[`date "+%Y-%m-%d %H:%M:%S"`] db2 start suc.">>$2/process.log
-echo "1">$2/ret
+logi    "db2 start suc."    $log_file
+logc    "1"                 $log_ret

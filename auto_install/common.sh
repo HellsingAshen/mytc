@@ -81,3 +81,32 @@ function get_uncompress_cmd()
         esac
     done
 }
+
+# log
+function prt(){
+    case "$1" in
+        error|ERROR)
+            echo "[error][`date "+%Y-%m-%d %H:%M:%S"`]" "$2";
+            echo "[error][`date "+%Y-%m-%d %H:%M:%S"`]" "$2" >> "$3";;
+        debug|DEBUG)
+            echo "[debug][`date "+%Y-%m-%d %H:%M:%S"`]" "$2" >> "$3";;
+        info|INFO)
+            echo "[info ][`date "+%Y-%m-%d %H:%M:%S"`]" "$2" >> "$3";;
+    esac
+}
+
+function logd(){
+    prt debug "$1" "$2"
+}
+
+function loge(){
+    prt error "$1" "$2"
+}
+
+function logi(){
+    prt info "$1" "$2"
+}
+
+function logc(){
+        echo "$1" > "$2"
+}

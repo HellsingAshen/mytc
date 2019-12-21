@@ -1,0 +1,7 @@
+# $1 make path
+# $2 erlang path
+# $3 log path
+cd $1;
+./configure --prefix=$2 --enable-hipe --enable-threads --enable-smp-support --enable-kernel-poll  --without-javac >> $log_path/process.log #>>$log_path/make_erl.log 2>/dev/null
+make>>$log_path/process.log #>>$3/make_erl.log 2>/dev/null
+make install>>$log_path/process.log #>>$3/make_erl.log 2>/dev/null

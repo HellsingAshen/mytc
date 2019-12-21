@@ -1,0 +1,20 @@
+#!/usr/bin/expect 
+	
+# $CMD "yes" "client"
+set shell_cmd [lindex $argv 0]
+set default_directory [lindex $argv 1]
+set product_choice [lindex $argv 2]
+
+#
+spawn $shell_cmd 
+
+expect "Install into default directory*"
+send "$default_directory\r"
+
+expect "Specify one of the following keywords to install DB2 products*"
+send "$product_choice\r"
+
+interact
+
+#exit 0
+
