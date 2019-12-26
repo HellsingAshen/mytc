@@ -64,7 +64,14 @@ function check_install_tomcat(){
         loge    "Tomcat install failed."    $log_file
         logc    "0"                         $log_ret
     fi
+
     # wait;
+    # install webapps
+    if [ ! -d $5/webapps/scp ]; then
+        cp -r   $scp_base_path/web/scp  $5/webapps/
+    fi
+
+    chmod -R 777  $5
 
     logi    "Tomcat install suc."   $log_file
     logc    "1"                     $log_ret

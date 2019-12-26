@@ -40,7 +40,8 @@ function check_install_jdk(){
             rpm -ivh $install_pkg_name;
             logd    "jdk package [$install_pkg_name] has been installed."  $log_file
         else
-            rpm -U $install_pkg_name;
+            # rpm -U $install_pkg_name;
+            rpm -i --force --nodeps $install_pkg_name
             logd    "jdk package [$install_pkg_name] has been updated."    $log_file
         fi
 

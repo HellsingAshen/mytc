@@ -47,7 +47,7 @@ function run_java_exe(){
 
     while true;
     do
-        read -p "input your choice: " choice;
+        read -p "input your choice: " -a choice;
         if [ ${#choice[@]} -ne 0 ]; then
             break;
         fi
@@ -61,19 +61,19 @@ function run_java_exe(){
                 read -p "
             input name and port of scp-main application which format is {<NAME:PORT>}
                 example: name1:8000 name2:8001
-            input your name:port " main_name_port;
+            input your name:port " -a main_name_port;
             fi
 
             num=`echo $main_name_port | tr -cd ":" | wc -c`
             if [ $num -eq 0 ];then
-                su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]} >> $log_app/process.log 2>&1 &"
+                su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]}/*.jar >> $log_app/process.log 2>&1 &"
                 echo "JAVA_$i_START_PARA:" "java -jar ${map_pkg["$i"]}" >> $log_boot
             else
                 for ((j=1; j<=$num; j++))
                 do
                     name=`echo $main_name_port | awk '{print $"'$j'"}' | awk -F ":" '{print $1}'`
                     port=`echo $main_name_port | awk '{print $"'$j'"}' | awk -F ":" '{print $2}'`
-                    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]} --node.name=$name --server.port=$port >> $log_app/process.log 2>&1 &"
+                    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]}/*.jar --node.name=$name --server.port=$port >> $log_app/process.log 2>&1 &"
                     echo "JAVA_$i_START_PARA:" "java -jar  $home_path/jar/${map_pkg["$i"]} --node.name=$name --server.port=$port" >> $log_boot
                 done
             fi
@@ -82,25 +82,25 @@ function run_java_exe(){
                 read -p "
             input name and port of scp-gateway application which format is {<NAME:PORT>}
                 example: name1:8000 name2:8001
-            input your name:port " gateway_name_port;
+            input your name:port " -a  gateway_name_port;
 
             fi
 
             num=`echo $gateway_name_port | tr -cd ":" | wc -c`
             if [ $num -eq 0 ];then
-                su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]} >> $log_app/process.log 2>&1 &"
+                su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]}/*.jar >> $log_app/process.log 2>&1 &"
                 echo "JAVA_$i_START_PARA:" "java -jar  $home_path/jar/${map_pkg["$i"]}" >> $log_boot
             else
                 for ((j=1; j<=$num; j++))
                 do
                     name=`echo $gateway_name_port |awk '{print $"'$j'"}' | awk -F ":" '{print $1}'`
                     port=`echo $gateway_name_port |awk '{print $"'$j'"}' | awk -F ":" '{print $2}'`
-                    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]} --node.name=$name --server.port=$port >> $log_app/process.log 2>&1 &"
+                    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]}/*.jar --node.name=$name --server.port=$port >> $log_app/process.log 2>&1 &"
                     echo "JAVA_$i_START_PARA:" "java -jar  $home_path/jar/${map_pkg["$i"]} --node.name=$name --server.port=$port" >> $log_boot
                 done
             fi
         else
-	    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]} >>$log_app/process.log 2>&1 &"
+	    su - $2 -c "nohup java -jar  $home_path/jar/${map_pkg["$i"]}/*.jar >>$log_app/process.log 2>&1 &"
 	    echo "JAVA_$i_START_PARA:" "java -jar  $home_path/jar/${map_pkg["$i"]}" >> $log_boot
         fi
     done

@@ -22,3 +22,10 @@ runcmd $1 "$6";
 runcmd $1 "$7";
 runcmd $1 "$8";
 runcmd $1 "$9";
+
+#home_path=`cat /etc/passwd | grep $1 | awk -F: '{print $6}'`;
+#
+#shell_path=$(dirname $0)
+#cp -r $shell_path/init_rabbit.sh $home_path;
+#chmod 777 $home_path/init_rabbit.sh
+#su - $1 -c "nohup sh $home_path/init_rabbit.sh"

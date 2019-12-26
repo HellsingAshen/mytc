@@ -1,8 +1,0 @@
-#!/usr/bin/expect 
-set pwd [lindex $argv 0]
-
-spawn su - root
-
-expect "Password*"
-send "$pwd\r"
-interact

@@ -6,6 +6,7 @@
 # $6 -- test_tables 
 # $7 -- db instance 
 # $8 -- db is init flag 
+# $9 -- db server location
 
 source $(dirname $0)/common.sh
 
@@ -45,7 +46,7 @@ fi
 logi    "db2 check db exist suc."  $log_file
 
 if [ $8 -eq 1 ] ;then
-    test=1 
+    test=$9
     if [ $test -eq 1 ]; then
         su - $4 -c "mkdir -p  ~/shell_path"
         su - $4 -c "mkdir -p  ~/init_sql"
@@ -64,32 +65,27 @@ if [ $8 -eq 1 ] ;then
         logc    "1" $log_pgret
     else 
         # check before init
-        ret=`su - $4 -c "db2 connect to $7 user $4 using $5>/dev/null 2>&1; db2 list tables | grep  $6 | wc -l"`
-        cnt=`echo $ret| awk '{print $19}'`
+        cnt=0
+        cnt=`su - $4 -c "db2 connect to $7 user $4 using $5>/dev/null 2>&1; db2 list tables | grep -i $6 | wc -l"`
         if [ $cnt -eq 0 ]; then
             # excute init sql
             su - $4 -c "mkdir -p  ~/shell_path"
             cp $2/db2_init_sql.sh /home/$4/shell_path;
-            cp -r $2/init_sql /home/$4/shell_path/
-            chmod 777 /home/$4/shell_path/*.sh;
+            cp -r $scp_base_path/init_sql /home/$4/shell_path/
+            chmod -R 777 /home/$4/shell_path/
 
             # show progress
+            logc    "0" $log_ret
+            logc    "0" $log_pgret
             {
-                sh $2/show_continue.sh "crt_db"
-            }&
+                $2/show_cond_progress.sh "remote_init_db"  "cat $log_pgret"
+            } &
 
-            su - $4 -c "sh /home/$4/shell_path/db2_init_sql.sh $1 $4 $5 ~/shell_path"
+            su - $4 -c "sh /home/$4/shell_path/db2_init_sql.sh $1 $4 $5 /home/$4/shell_path/init_sql"
+            logc    "1" $log_pgret
 
-            kill_pid=`ps -ef | grep show_continue.sh | grep -v grep | awk '{print $2}'`
-            for i in $kill_pid
-            do
-                echo " kill process " $i
-                kill -9 $i >/dev/null 2>&1
-            done 
-
-            ret=`su - $4 -c "db2 connect to $7 user $4 using $5; db2 list tables | grep  $6 | wc -l"`
-            cnt=`echo $ret| awk '{print $19}'`
-            if [ $cnt -eq 0 ]; then
+            ret=`su - $4 -c "db2 connect to $7 user $4 using $5; db2 list tables | grep -i $6 | wc -l"`
+            if [ $ret -eq 0 ]; then
                 echo "[`date "+%Y-%m-%d %H:%M:%S"`]init db $1 failed.">>$3/process.log
                 echo "0">$3/ret
                 exit 0;

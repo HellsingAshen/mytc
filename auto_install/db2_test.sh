@@ -51,5 +51,5 @@ else
     fi
 fi
 
-logi    "db2 start suc."    $log_file
+logi    "db2 test suc."    $log_file
 logc    "1"                 $log_ret

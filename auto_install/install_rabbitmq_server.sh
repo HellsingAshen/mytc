@@ -74,7 +74,7 @@ function do_install_dep(){
                 log  "0"                                    $log_ret
                 exit 0;
             fi
-            logi    "install " $1 "end" $log_file;;
+            logi    "install  $1 end" $log_file;;
 
         erlang)
             local find_str="find $2 -name otp_src*.tar.gz"
@@ -125,7 +125,7 @@ halt().
                 exit 0;
             fi
 
-            logi    "install " $1 "end" $log_file;;
+            logi    "install  $1 end" $log_file;;
         *)
             loge "not support package ."    $log_file
             logc "0"                        $log_ret;;

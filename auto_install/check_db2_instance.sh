@@ -30,6 +30,7 @@ else #local
     fi
 fi
 
+# create instance 
 ret=`su - $5 -c "db2ilist 2>/dev/null | grep $2 | wc -l"`
 if [ $ret -eq 0 ]; then 
     count=`find / -name db2icrt | wc -l`;
@@ -55,10 +56,11 @@ if [ $ret -eq 0 ]; then
         logc    "0"                                     $log_ret        
         exit 0;
     fi
+    
 fi
 
-# if install version is v10, we need config port in /etc/hosts
-if [ $6 -eq 10 ]; then
+# if install server version is v10, we need config port in /etc/hosts
+if [ $6 -eq 10 ] && [ $8 -eq 1 ]; then
     count=`grep db2c_$2 /etc/services | wc -l`
     if [ $count -eq 1 ];then
         port=`grep db2c_$2 /etc/services | grep -wi tcp | awk '{print $2}' | awk -F "/" '{print $1}'`
@@ -82,6 +84,9 @@ if [ $6 -eq 10 ]; then
 
 fi
 
+
+# start db
+su - $5 -c "db2start > /dev/null 2>/dev/null"
 
 logi "db2 instance check $2 suc."   $log_file
 logc "1"                            $log_ret

@@ -1,59 +1,5 @@
-#<<CONFIG
 
-# install config
-install_pkg=""      # selected package name
-pkg_path=""         # 3rd package path
-install_path=""     # middle process directory
-shell_path=""       # path which install-shell is located 
-scp_install_path="" # scp_install path
-jar_path=""         # scp_install path
-log_path=""
-log_file=""
-log_ret=""
-log_boot=""
-log_showpgr=""
-
-# 3rd path config
-erlang_path=/usr/local/erlang
-consul_path=/usr/local/consul/bin
-tomcat_path=/usr/local/tomcat
-rabbitmq_server_path=/usr/local/rabbitmq_server
-
-# db config
-db_type=""          # DB2(1) ORACLE(2) MYSQL(3)
-dbs_location=""      # 1 -- LOCAL 2 -- REMOTE
-db2_version="10"
-
-cur_date=`date "+%Y_%m_%d_%H_%M_%S"`
-db_instance="scp"
-root_pwd="ashen"
-app_user="scp"
-app_pwd="scp"
-db_name="scp"
-db_node_name="nodescp"
-db_server_ip="192.168.70.151"
-db_server_port="50000"
-db_is_crt_db_flag=""    # 1 -- create  other; -- not create 
-db_is_init_flag=""   # 1 -- init   other; -- not init 
-local_ip=""
-consul_persistence_path=""
-main_name_port="" # name:8080
-gateway_name_port=""
-redirect_out=">/dev/null"
-
-test_table="env_config"
-
-USEAGE="USEAGE:\n\tinstall_cbs_platform.sh  <pkg_path> <install_path>\n\tinstall_cbs_platform.sh <install_path> "
-
-# hosts
-SCPDBSERVER="10.0.91.17"
-SCPCONFIGSERVER="10.0.91.168"
-SCPRABBITMQSERVER="10.0.91.168"
-
-#CONFIG
-# config end
-
-#source ./config
+source $(dirname $0)/config
 source $(dirname $0)/common.sh
 function choose_pkg(){
     local i=0;
@@ -131,6 +77,7 @@ function check_install_expect(){
     echo "input root passwd:"
     su - root -c "rpm -ivh $expect_pkg_dir/*.rpm"
     echo "[`date "+%Y-%m-%d %H:%M:%S"`]expect install suc..">>$2/process.log
+    echo ""
 }
 
 
@@ -176,8 +123,11 @@ function boot_rabbitmq(){
     if [ $ret -eq 0 ]; then
         local mq_init_1="rabbitmq-plugins enable rabbitmq_management"
         local mq_init_2="rabbitmq-server start";
+        local mq_init_3="rabbitmqctl eval 'rabbit_amqqueue:declare({resource, <<"/">>, queue, <<"scpServiceLog">>}, true, false, [], none).'"
+        local mq_init_4="rabbitmqctl eval 'rabbit_amqqueue:declare({resource, <<"/">>, queue, <<"scpTransLog">>}, true, false, [], none).'"
 
-        expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/start_rabbit.sh $app_user \"$mq_init_1\" \"$mq_init_2\"" >> $log_file
+
+        expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/start_rabbit.sh $app_user \"$mq_init_1\" \"$mq_init_2\" \"$mq_init_3\" \"$mq_init_4\"" >> $log_file
 	    sleep 1; # for boot rabbit time delay 
         expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/check_start_process.sh $app_user erlang rabbit rabbit $log_path">>$log_file
         ret=`cat $log_path/ret`
@@ -193,6 +143,10 @@ function boot_rabbitmq(){
         else
             echo "RABBIT_MQ_START_PARA:" $local_ip "0000" "$mq_init_2" >> $log_boot
         fi
+
+        app_home_path=`cat /etc/passwd | grep $app_user | awk -F: '{print $6}'`
+    	expect $shell_path/exp/su_cmd.exp "root" $root_pwd "cp -r $shell_path/init_rabbit.sh $app_home_path; chmod 777 $app_home_path/init_rabbit.sh" >> $log_file
+        expect $shell_path/exp/su_cmd.exp "$app_user" $app_pwd "sh $app_home_path/init_rabbit.sh; rm -f $app_home_path/init_rabbit.sh" >> $log_file
     fi
 
     logi "boot mq suc." $log_file
@@ -246,13 +200,13 @@ function main(){
 
     if [ $# -eq 1 ]; then
         # para 1 -- install_path
-        if [ ! -d $scp_install_path/package ]; then
+        if [ ! -d $scp_install_path/3rd ]; then
             echo "no package directory found in $scp_install_path"
             echo -e $USEAGE;
             exit 0;
         fi
 
-        pkg_path=$scp_install_path/package;
+        pkg_path=$scp_install_path/3rd;
 
         if [ ! -d $1 ]; then  
             mkdir -p $1 ; 
@@ -309,6 +263,10 @@ function main(){
         read -p "input db_name:" db_name;
     fi 
 
+    if [ -z $db_node_name ]; then 
+        read -p "input db_node_name:" db_node_name;
+    fi 
+
     if [ -z $root_pwd ]; then 
         read -p "input root passwd:" root_pwd;
     fi 
@@ -321,6 +279,7 @@ function main(){
     touch $log_path/ret && chmod 777 $log_path/ret
     touch $log_path/tmp && chmod 777 $log_path/tmp
     touch $log_showpgr && chmod 777 $log_showpgr
+    touch $log_boot && chmod 777 $log_boot
 
     local_ip=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"`
 
@@ -374,6 +333,24 @@ function main(){
     fi
 }
 
+function boot_tomcat(){
+    logc    "0" $log_ret
+    expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/check_start_process.sh $app_user tomcat  tomcat  tomcat $log_path" >> $log_file
+    ret=`cat $log_path/ret`
+
+    if [ $ret -eq 0 ]; then
+        expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/start_tomcat.sh $app_user $log_path $tomcat_path/bin/startup.sh" >> $log_file
+        sleep 1; # 
+        expect $shell_path/exp/su_cmd.exp "root" $root_pwd "$shell_path/check_start_process.sh $app_user tomcat  tomcat  tomcat $log_path" >> $log_file
+        ret=`cat $log_path/ret`
+        if [ $ret -eq 0 ]; then
+            echo "boot tomcat failed. please check log $log_path/process.log"
+            exit 0;
+        fi
+    fi
+
+}
+
 function bundle_install(){
     local choice=();
     while true;
@@ -391,7 +368,7 @@ function bundle_install(){
                               6) start java application
                               7) exit installation
 
-                your choice:" choice
+                your choice:" -a choice
             # CHECK TO DO
             if [ ${#choice[@]} -ne 0 ]; then
                 break;
@@ -451,6 +428,8 @@ function bundle_install(){
                     echo "install_tomcat failed. please check log $log_path/process.log"
                     exit 0;
                 fi
+
+                boot_tomcat;
                 echo ""
                 echo "----> check and install tomcat finished."
                 echo ""
@@ -481,6 +460,7 @@ function one_key_install(){
         exit 0;
     fi
     boot_consul;
+    echo ""
     echo "----> check and install consul finished.  start to check and install rabbitmq_server. "
     echo ""
 
@@ -492,6 +472,7 @@ function one_key_install(){
     fi
 
     boot_rabbitmq;
+    echo ""
     echo "----> check and install rabbit finished.  start to check and install jdk."
     echo ""
 
@@ -501,6 +482,7 @@ function one_key_install(){
         echo "install_jdk failed. please check log $log_path/process.log"
         exit 0;
     fi
+    echo ""
     echo "----> check and install jdk finished.  start to check and install tomcat."
     echo ""
 
@@ -510,6 +492,7 @@ function one_key_install(){
         echo "install_tomcat failed. please check log $log_path/process.log"
         exit 0;
     fi
+    boot_tomcat;
     echo ""
     echo "----> check and install tomcat finished.  start to check and start java process."
     echo ""
@@ -673,7 +656,7 @@ function check_install_db2(){
     fi 
 
     # db2start if local is server; connect test if local is client
-    expect $shell_path/exp/su_cmd.exp "root" "$root_pwd" "sh $shell_path/db2_start.sh $db_instance $pkg_path $app_user $dbs_location $db_server_ip $db_server_port $db_name $db_node_name $app_pwd ";
+    expect $shell_path/exp/su_cmd.exp "root" "$root_pwd" "sh $shell_path/db2_test.sh $db_instance $pkg_path $app_user $dbs_location $db_server_ip $db_server_port $db_name $db_node_name $app_pwd ";
     ret=`cat $log_path/ret`
     if [ $ret -eq 0 ]; then 
         loge "db2 start failed. please check it."   $log_file
@@ -683,7 +666,7 @@ function check_install_db2(){
     # if needed, create db
     if [ $db_is_crt_db_flag -eq 1 ];then
         # db2init
-        expect $shell_path/exp/su_cmd.exp "root" "$root_pwd" "sh $shell_path/db2_init.sh $db_name $shell_path $log_path $app_user $app_pwd $test_table $db_instance $db_is_init_flag";
+        expect $shell_path/exp/su_cmd.exp "root" "$root_pwd" "sh $shell_path/db2_init.sh $db_name $shell_path $log_path $app_user $app_pwd $test_table $db_instance $db_is_init_flag $dbs_location";
         ret=`cat $log_path/ret`
         if [ $ret -eq 0 ]; then 
             loge "db2 init failed. please check it." $log_file

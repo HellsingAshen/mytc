@@ -1,38 +1,49 @@
-pkg_path=""
-install_path=""
-shell_path=""
-cur_date=`date "+%Y_%m_%d_%H_%M_%S"`
-install_cpx_log="/pkg/install_cpx_log_$cur_date"
+USEAGE="USEAGE:\n\tinstall_cbs_platform.sh  <pkg_path> <install_path>\n\tinstall_cbs_platform.sh <install_path> "
+root_pwd="ashen"            # root password
+local_ip=""
+
+# install config
+install_pkg=""      # selected package name
+pkg_path=""         # 3rd package path
+install_path=""     # middle process directory
+shell_path=""       # path which install-shell is located
+scp_install_path="" # scp_install path
+jar_path=""         # scp_install path
+log_path=""
+log_file=""
+log_ret=""
+log_boot=""
+log_showpgr=""
+
+# 3rd path config
 erlang_path=/usr/local/erlang
 consul_path=/usr/local/consul/bin
-rabbitmq_server_path=/usr/local/rabbitmq_server
 tomcat_path=/usr/local/tomcat
-install_pkg=""
+rabbitmq_server_path=/usr/local/rabbitmq_server
 
-#db_type=1 # DB2(1) ORACLE(2) MYSQL(3)
-#db_location="2"  # 1 -- LOCAL 2 -- REMOTE
+# db config
+db_type=""                      # DB2(1) ORACLE(2) MYSQL(3)
+dbs_location=""                 # 1 -- LOCAL 2 -- REMOTE
+db2_version="10"                # db2 version
+db_instance="scp"               # db2 instance 
 
-db_type="" # DB2(1) ORACLE(2) MYSQL(3)
-db_location=""  # 1 -- LOCAL 2 -- REMOTE
+db_name="scp"                   # db name 
+db_node_name="nodescp"          # db node name 
+db_server_ip="192.168.70.164"   # db server ip 
+db_server_port="50000"          # db server listen port 
+db_is_crt_db_flag=""            # 1 -- create  other; -- not create
+db_is_init_flag=""              # 1 -- init   other; -- not init
 
-db_instance="scp"
-root_pwd="redhat"
-app_user="scp"
-app_pwd="scp"
-db_name="scp"
-db_node_name="nodescp"
+# application config 
+app_user="scp"                  # application user 
+app_pwd="scp"                   # application user password
+consul_persistence_path=""        
+main_name_port=""               # name:8080
+gateway_name_port=""            # name:8081
 test_table="env_config"
-db_server_ip="192.168.70.151"
-db_server_port="50000"
-db_is_crt_db_flag="" # 1 -- create  other; -- not create
-db_is_init_db_flag="" # 1 -- init   other; -- not init
-local_ip=""
-consul_persistence_path=""
-main_name_port="" # name:8080
-gateway_name_port=""
 
-USEAGE="USEAGE:\n\tinstall_cbs_platform.sh  <pkg_path> <install_path>\n\tinstall_cbs_platform.sh <install_path> "
 # hosts
 SCPDBSERVER="10.0.91.17"
 SCPCONFIGSERVER="10.0.91.168"
 SCPRABBITMQSERVER="10.0.91.168"
+
