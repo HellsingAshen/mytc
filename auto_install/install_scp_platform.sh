@@ -360,7 +360,7 @@ function bundle_install(){
         do
             read -p "
             input your bundle install choice, if mult choice, separated by space which like \"1 3 4\":
-                              1) db2
+                              1) db
                               2) consul 
                               3) rabbitmq-server
                               4) jdk
