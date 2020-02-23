@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<!--    <context:component-scan base-package="com.git.dao"></context:component-scan>-->
+<!--    <context:component-scan base-package="com.git.domain"></context:component-scan>-->
+<!--    <context:component-scan base-package="com.git.service"></context:component-scan>-->
+
+    <bean id="accountService" class="com.git.service.AccountServiceImpl">
+    	<property name="accountDao" ref="accountDao"></property>
+        <property name="transactionManager" ref="transactionManager"></property>
+    </bean>
+<!--    IAccountDao-->
+    <bean id="accountDao" class="com.git.dao.AccountDaoImpl">
+    	<property name="runner" ref="queryRunner"></property>
+        <property name="connectionUtils" ref="connectionUtils"></property>
+    </bean>
+    
+    <bean id="queryRunner" class="org.apache.commons.dbutils.QueryRunner" scope="prototype">
+    <!-- 注入数据源 -->
+<!--    	<constructor-arg name="ds" ref="dataSource"></constructor-arg>-->
+    </bean>
+    
+
+
+    <bean id="connectionUtils" class="com.git.utils.ConnectionUtils">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.70.174:3306/easy"></property>
+        <property name="user" value="jin"></property>
+        <property name="password" value="jin"></property>
+    </bean>
+
+    <bean id="transactionManager" class="com.git.utils.TransactionManager">
+        <property name="connectionUtils" ref="connectionUtils"></property>
+
+    </bean>
+</beans>
