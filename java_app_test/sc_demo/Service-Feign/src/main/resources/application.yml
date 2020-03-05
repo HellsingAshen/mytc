@@ -1,0 +1,15 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1803/eureka
+
+server:
+  port: 4803
+
+spring:
+  application:
+    name: service-feign-4803
+
+feign:
+  hystrix:
+    enabled: true

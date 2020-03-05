@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    config:
+      # config server
+#      uri: http://localhost:8803/
+      # 对应 {label} 部分，即 Git 的分支
+      label: master
+      # 对应 {application} 部分
+      name: ServiceConfigClient
+      # 对应 {profile} 部分
+      profile: dev
+      discovery:
+        enabled: true
+        service-id: config-git-server
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1803/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh

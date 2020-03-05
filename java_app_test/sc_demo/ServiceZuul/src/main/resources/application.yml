@@ -1,0 +1,18 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1803/eureka
+server:
+  port: 5803
+spring:
+  application:
+    name: service-zuul-5803
+
+zuul:
+  routes:
+    api-a:
+      path: /api-a/**
+      serviceId: SERVICE-RIBBON-3803
+    api-b:
+      path: /api-b/**
+      serviceId: SERVICE-FEIGN-4803

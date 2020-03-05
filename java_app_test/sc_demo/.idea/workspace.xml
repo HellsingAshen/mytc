@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1925e3e2-efd3-4687-926e-e25a11617905" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Interface" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1Yc0ay2Hk31MW7AZWfdl2OOfZdl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/streamProducer/src/main/java/com/git/streamproducerdemo" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\java_app\sc_demo\streamProducer\src\main\java\com\git\streamproducerdemo" />
+      <recent name="D:\java_app\sc_demo\streamConsumer\src\main\java\com\git\streamconsumerdemo" />
+      <recent name="D:\java_app\sc_demo\streamProducer\src\main\java\com\git\msgdriver" />
+      <recent name="D:\java_app\sc_demo\MessageStream\src\main\resources" />
+      <recent name="D:\java_app\sc_demo\ZipkinServer\src\main\resources" />
+    </key>
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.example.demo" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.StreamProducerApplication">
+    <configuration name="ServiceConfigClientApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.git.configclientdemo.ServiceConfigClientApplication" />
+      <module name="ServiceConfigClient" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.git.configclientdemo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in MessageStream" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="MessageStream" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="streamProducer" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.git.streamproducerdemo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.streamproducerdemo.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="streamProducer" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.git.msgdriver.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.msgdriver.Application" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ConfigClientApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="config-client" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.demo.ConfigClientApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="zs" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.DemoApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="streamProducer" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.git.msgdriver.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.DemoApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EurekaServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="EurekaServer" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.demo.EurekaServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MessageStreamApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="MessageStream" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.messagestreamdemo.MessageStreamApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SayHiServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="SayHiService" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.demo.SayHiServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerZipkinApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ServerZipkin" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.serverzipkindemo.ServerZipkinApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceConfigClientApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ServiceConfigClient" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.configclientdemo.ServiceConfigClientApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceConfigServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ServiceConfigServer" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.configserverdemo.ServiceConfigServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceFeignApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="Service-Feign" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.feigndemo.ServiceFeignApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceRibbonApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ServiceRibbon" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.ribbondemo.ServiceRibbonApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServiceZuulApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ServiceZuul" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.zuuldemo.ServiceZuulApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StreamConsumerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="streamConsumer" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.streamconsumerdemo.StreamConsumerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StreamProducer" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="streamProducer" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.git.msgdriver.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.msgdriver.StreamProducer" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="StreamProducerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="streamProducer" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.streamproducerdemo.StreamProducerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ZipkinServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ZipkinServer" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.git.zipkinserverdemo.ZipkinServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.Application (1)" />
+        <item itemvalue="Spring Boot.Application" />
+        <item itemvalue="Spring Boot.StreamProducer" />
+        <item itemvalue="JUnit.All in MessageStream" />
+        <item itemvalue="Application.ServiceConfigClientApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <option name="contentProportion" value="0.27639753" />
+          <treeState>
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="Spring Boot" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="Spring Boot" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="Finished" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+            </expand>
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1925e3e2-efd3-4687-926e-e25a11617905" name="Default Changelist" comment="" />
+      <created>1583226642532</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1583226642532</updated>
+      <workItem from="1583226645721" duration="46908000" />
+      <workItem from="1583333423718" duration="2640000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="272" y="25" key="#Inspections" timestamp="1583330856860">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="272" y="25" key="#Inspections/0.0.1360.728@0.0.1360.728" timestamp="1583330856859" />
+    <state x="272" y="25" key="#Project_Structure" timestamp="1583329407677">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="272" y="25" key="#Project_Structure/0.0.1360.728@0.0.1360.728" timestamp="1583329407677" />
+    <state x="485" y="72" key="#com.intellij.ide.util.MemberChooser" timestamp="1583235438715">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="485" y="72" key="#com.intellij.ide.util.MemberChooser/0.0.1360.728@0.0.1360.728" timestamp="1583235438715" />
+    <state x="302" y="44" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1583329211397">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="302" y="44" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog/0.0.1360.728@0.0.1360.728" timestamp="1583329211397" />
+    <state x="410" y="113" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1583334026968">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="410" y="113" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1360.728@0.0.1360.728" timestamp="1583334026968" />
+    <state x="460" y="121" key="FileChooserDialogImpl" timestamp="1583332934223">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="460" y="121" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1583332934223" />
+    <state width="931" height="179" key="GridCell.Tab.0.bottom" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.0.bottom/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.0.center" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.0.center/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.0.left" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.0.left/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.0.right" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.0.right/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.1.bottom" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.1.bottom/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.1.center" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.1.center/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.1.left" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.1.left/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="931" height="179" key="GridCell.Tab.1.right" timestamp="1583372891420">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="931" height="179" key="GridCell.Tab.1.right/0.0.1360.728@0.0.1360.728" timestamp="1583372891420" />
+    <state width="901" height="179" key="GridCell.Tab.2.bottom" timestamp="1583332935336">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="901" height="179" key="GridCell.Tab.2.bottom/0.0.1360.728@0.0.1360.728" timestamp="1583332935336" />
+    <state width="901" height="179" key="GridCell.Tab.2.center" timestamp="1583332935335">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="901" height="179" key="GridCell.Tab.2.center/0.0.1360.728@0.0.1360.728" timestamp="1583332935335" />
+    <state width="901" height="179" key="GridCell.Tab.2.left" timestamp="1583332935335">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="901" height="179" key="GridCell.Tab.2.left/0.0.1360.728@0.0.1360.728" timestamp="1583332935335" />
+    <state width="901" height="179" key="GridCell.Tab.2.right" timestamp="1583332935336">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state width="901" height="179" key="GridCell.Tab.2.right/0.0.1360.728@0.0.1360.728" timestamp="1583332935336" />
+    <state x="210" y="21" key="Maven.ArtifactSearchDialog" timestamp="1583235014654">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="210" y="21" key="Maven.ArtifactSearchDialog/0.0.1360.728@0.0.1360.728" timestamp="1583235014654" />
+    <state x="367" y="119" width="626" height="490" key="find.popup" timestamp="1583332671693">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="367" y="119" width="626" height="490" key="find.popup/0.0.1360.728@0.0.1360.728" timestamp="1583332671693" />
+    <state x="88" y="90" key="new project wizard" timestamp="1583333693334">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="88" y="90" key="new project wizard/0.0.1360.728@0.0.1360.728" timestamp="1583333693334" />
+    <state x="343" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1583234655200">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="343" y="49" width="672" height="678" key="search.everywhere.popup/0.0.1360.728@0.0.1360.728" timestamp="1583234655200" />
+  </component>
+</project>
