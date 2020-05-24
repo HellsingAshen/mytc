@@ -13,14 +13,25 @@
         <module name="ServiceConfigClient" />
         <module name="demo (1)" />
         <module name="demo" />
+        <module name="demo (6)" />
+        <module name="demo (8)" />
         <module name="sc_demo" />
+        <module name="demo (11)" />
         <module name="Service-Feign" />
-        <module name="ServiceRibbon" />
-        <module name="config-client" />
-        <module name="ZipkinServer" />
+        <module name="demo (9)" />
+        <module name="demo (3)" />
+        <module name="demo (10)" />
         <module name="streamConsumer" />
+        <module name="demo (5)" />
+        <module name="ServiceRibbon" />
+        <module name="demo (7)" />
+        <module name="config-client" />
+        <module name="demo (2)" />
+        <module name="ZipkinServer" />
+        <module name="demo (12)" />
         <module name="ServerZipkin" />
         <module name="EurekaServer" />
+        <module name="demo (4)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -45,6 +56,17 @@
       <module name="config-client" options="-parameters" />
       <module name="demo" options="-parameters" />
       <module name="demo (1)" options="-parameters" />
+      <module name="demo (10)" options="-parameters" />
+      <module name="demo (11)" options="-parameters" />
+      <module name="demo (12)" options="-parameters" />
+      <module name="demo (2)" options="-parameters" />
+      <module name="demo (3)" options="-parameters" />
+      <module name="demo (4)" options="-parameters" />
+      <module name="demo (5)" options="-parameters" />
+      <module name="demo (6)" options="-parameters" />
+      <module name="demo (7)" options="-parameters" />
+      <module name="demo (8)" options="-parameters" />
+      <module name="demo (9)" options="-parameters" />
       <module name="streamConsumer" options="-parameters" />
       <module name="streamProducer" options="-parameters" />
       <module name="zs" options="-parameters" />

@@ -12,6 +12,7 @@ public class HelloService {
 
     @HystrixCommand(fallbackMethod = "hiError")
     public String hiService(String name) {
+        // 调用 get 请求，去 Service-SAYHI(当前有 2 个), 会做负载分发
         return restTemplate.getForObject("http://SAYHISERVICE/hi?name=" + name, String.class);
     }
 

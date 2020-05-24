@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1925e3e2-efd3-4687-926e-e25a11617905" name="Default Changelist" comment="" />
+    <list default="true" id="1925e3e2-efd3-4687-926e-e25a11617905" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-repo/ServiceConfigClient-dev.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-repo/ServiceConfigClientApplication-dev.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-repo/config-client-dev.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-repo/hello-client-dev.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-repo/sc-client-dev.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/com/git/service/HelloService.java" beforeDir="false" afterPath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/com/git/service/HelloService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServiceRibbon/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServiceZuul/src/main/resources/application.properties" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -15,6 +42,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
       <MavenImportingSettings>
@@ -23,6 +53,7 @@
     </option>
   </component>
   <component name="ProjectId" id="1Yc0ay2Hk31MW7AZWfdl2OOfZdl" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -34,9 +65,10 @@
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/streamProducer/src/main/java/com/git/streamproducerdemo" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -256,11 +288,6 @@
                 <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
                 <item name="Spring Boot" type="7427dc5b:ServiceModel$ServiceGroupNode" />
               </path>
-              <path>
-                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
-                <item name="Spring Boot" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-                <item name="Finished" type="7427dc5b:ServiceModel$ServiceGroupNode" />
-              </path>
             </expand>
             <select />
           </treeState>
@@ -280,6 +307,12 @@
       <updated>1583226642532</updated>
       <workItem from="1583226645721" duration="46908000" />
       <workItem from="1583333423718" duration="2640000" />
+      <workItem from="1583484522798" duration="2156000" />
+      <workItem from="1583552231683" duration="2551000" />
+      <workItem from="1583740966298" duration="459000" />
+      <workItem from="1584496477404" duration="1862000" />
+      <workItem from="1584583203928" duration="39000" />
+      <workItem from="1586955184030" duration="86000" />
     </task>
     <servers />
   </component>
@@ -307,10 +340,10 @@
       <screen x="0" y="0" width="1360" height="728" />
     </state>
     <state x="410" y="113" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1360.728@0.0.1360.728" timestamp="1583334026968" />
-    <state x="460" y="121" key="FileChooserDialogImpl" timestamp="1583332934223">
+    <state x="460" y="121" key="FileChooserDialogImpl" timestamp="1584583241312">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
-    <state x="460" y="121" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1583332934223" />
+    <state x="460" y="121" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1584583241312" />
     <state width="931" height="179" key="GridCell.Tab.0.bottom" timestamp="1583372891420">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
@@ -363,6 +396,10 @@
       <screen x="0" y="0" width="1360" height="728" />
     </state>
     <state x="210" y="21" key="Maven.ArtifactSearchDialog/0.0.1360.728@0.0.1360.728" timestamp="1583235014654" />
+    <state x="360" y="187" key="com.intellij.ide.util.TipDialog" timestamp="1584583203927">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="360" y="187" key="com.intellij.ide.util.TipDialog/0.0.1360.728@0.0.1360.728" timestamp="1584583203927" />
     <state x="367" y="119" width="626" height="490" key="find.popup" timestamp="1583332671693">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
