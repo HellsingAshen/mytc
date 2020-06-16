@@ -32,7 +32,7 @@ int get_field_int(const char* filename, const char* fieldname, const char* field
     
     lua_pop(L, 1);
 
-	lua_close(L);
+    lua_close(L);
     return ret;
 }
 
@@ -66,7 +66,7 @@ char* get_field_string(const char* filename, const char* fieldname, const char* 
     strcpy(retvalue, fieldvalue);
     
     lua_pop(L, 1);
-	lua_close(L);
+    lua_close(L);
 
     return retvalue;
 }
