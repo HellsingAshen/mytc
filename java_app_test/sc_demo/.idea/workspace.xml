@@ -2,18 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1925e3e2-efd3-4687-926e-e25a11617905" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../config-repo/ServiceConfigClient-dev.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../config-repo/ServiceConfigClientApplication-dev.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../config-repo/config-client-dev.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../config-repo/hello-client-dev.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../config-repo/sc-client-dev.properties" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../lua_test/co_filter.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../lua_test/co_test.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../lua_test/metatable_tc.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../lua_test/tbl.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/com/git/service/HelloService.java" beforeDir="false" afterPath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/com/git/service/HelloService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServiceRibbon/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ServiceZuul/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/ServiceRibbonApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/ServiceRibbon/src/main/java/com/git/ribbondemo/ServiceRibbonApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../lua_test/co.lua" beforeDir="false" afterPath="$PROJECT_DIR$/../../lua_test/co.lua" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +64,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../lua_test" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -313,6 +309,8 @@
       <workItem from="1584496477404" duration="1862000" />
       <workItem from="1584583203928" duration="39000" />
       <workItem from="1586955184030" duration="86000" />
+      <workItem from="1591081306641" duration="6003000" />
+      <workItem from="1591099234509" duration="17000" />
     </task>
     <servers />
   </component>
@@ -340,10 +338,10 @@
       <screen x="0" y="0" width="1360" height="728" />
     </state>
     <state x="410" y="113" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1360.728@0.0.1360.728" timestamp="1583334026968" />
-    <state x="460" y="121" key="FileChooserDialogImpl" timestamp="1584583241312">
+    <state x="460" y="121" key="FileChooserDialogImpl" timestamp="1591099248963">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
-    <state x="460" y="121" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1584583241312" />
+    <state x="460" y="121" key="FileChooserDialogImpl/0.0.1360.728@0.0.1360.728" timestamp="1591099248963" />
     <state width="931" height="179" key="GridCell.Tab.0.bottom" timestamp="1583372891420">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
@@ -396,14 +394,18 @@
       <screen x="0" y="0" width="1360" height="728" />
     </state>
     <state x="210" y="21" key="Maven.ArtifactSearchDialog/0.0.1360.728@0.0.1360.728" timestamp="1583235014654" />
-    <state x="360" y="187" key="com.intellij.ide.util.TipDialog" timestamp="1584583203927">
+    <state x="360" y="187" key="com.intellij.ide.util.TipDialog" timestamp="1591099233149">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
-    <state x="360" y="187" key="com.intellij.ide.util.TipDialog/0.0.1360.728@0.0.1360.728" timestamp="1584583203927" />
-    <state x="367" y="119" width="626" height="490" key="find.popup" timestamp="1583332671693">
+    <state x="360" y="187" key="com.intellij.ide.util.TipDialog/0.0.1360.728@0.0.1360.728" timestamp="1591099233149" />
+    <state x="483" y="75" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1591084431751">
       <screen x="0" y="0" width="1360" height="728" />
     </state>
-    <state x="367" y="119" width="626" height="490" key="find.popup/0.0.1360.728@0.0.1360.728" timestamp="1583332671693" />
+    <state x="483" y="75" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1360.728@0.0.1360.728" timestamp="1591084431751" />
+    <state x="367" y="119" width="647" height="534" key="find.popup" timestamp="1591086205310">
+      <screen x="0" y="0" width="1360" height="728" />
+    </state>
+    <state x="367" y="119" width="647" height="534" key="find.popup/0.0.1360.728@0.0.1360.728" timestamp="1591086205310" />
     <state x="88" y="90" key="new project wizard" timestamp="1583333693334">
       <screen x="0" y="0" width="1360" height="728" />
     </state>

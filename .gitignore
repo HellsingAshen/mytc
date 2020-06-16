@@ -3,3 +3,6 @@
 *.gz
 *.swp
 *.swo
+*.iml
+*.\*idea
+

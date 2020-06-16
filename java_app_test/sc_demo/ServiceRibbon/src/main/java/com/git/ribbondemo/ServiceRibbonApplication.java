@@ -3,6 +3,7 @@ package com.git.ribbondemo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ public class ServiceRibbonApplication {
     @Bean
     @LoadBalanced
     RestTemplate restTemplate() {
+//        LoadBalancerClient
         return new RestTemplate();
     }
 }

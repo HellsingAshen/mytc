@@ -1,7 +1,8 @@
--- p/s 1
+-- p/s 2
 print("test producer and consumer")
-local p
-function receive ()
+local pro = nil;
+
+function receive (p)
     local status, value = coroutine.resume(p)
     return value
 end
@@ -19,15 +20,22 @@ function producer()
     end
 end
 
-function consumer()
+function filter(p)
     while true do
-        local x = receive()
-        print("consumer " .. (x or "nil"))
-        if (x == 9) then
-            break;
-        end
+        local x = receive(p);
+        x = string.format("%d%d", x, x)
+        print("filter " .. (x or "nil"))
+        send(x)
     end
 end
 
-p = coroutine.create(producer)
-consumer()
+function consumer(p)
+    while true do
+        local x = receive(p)
+        print("consumer " .. (x or "nil"))
+    end
+end
+
+pro = coroutine.create(producer)
+f = coroutine.create(filter(pro))
+consumer(f)
